@@ -1,13 +1,13 @@
-const CACHE_NAME = "inventory-offline-v20260531-render-ready-1";
+const CACHE_NAME = "inventory-offline-v20260531-store-master-1";
 const OFFLINE_ASSETS = [
   "./",
   "./index.html",
   "./staff.html",
   "./manager.html",
   "./admin.html",
-  "./app.css?v=20260531-render-ready",
-  "./app.js?v=20260531-render-ready",
-  "./staff-qr.png?v=20260531-render-ready"
+  "./app.css?v=20260531-store-master",
+  "./app.js?v=20260531-store-master",
+  "./staff-qr.png?v=20260531-store-master"
 ];
 
 self.addEventListener("install", (event) => {

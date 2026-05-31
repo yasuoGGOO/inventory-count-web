@@ -3,7 +3,7 @@ const LANGUAGE_KEY = "inventory-language-v1";
 const CLIENT_ID_KEY = "inventory-client-id-v1";
 const PENDING_SYNC_KEY = "inventory-pending-sync-v2-store-separated";
 const SYNC_INTERVAL_MS = 15000;
-const APP_VERSION = "20260531-render-ready";
+const APP_VERSION = "20260531-store-master";
 const languageNames = { ja: "日本語", my: "မြန်မာ", vi: "Tiếng Việt" };
 const speechLanguages = { ja: "ja-JP", my: "my-MM", vi: "vi-VN" };
 const stores = [
@@ -11,22 +11,22 @@ const stores = [
     id: "asaka",
     name: "朝霞東口店",
     role: "管理者権限",
-    can: ["全店舗閲覧", "全店舗CSV出力", "商品マスター管理"],
+    can: ["全店舗閲覧", "全店舗CSV出力", "自店舗商品マスター管理"],
     cannot: []
   },
   {
     id: "kumagaya",
     name: "熊谷南口店",
     role: "自店舗のみ",
-    can: ["自店舗棚卸入力", "自店舗履歴閲覧", "自店舗CSV出力"],
-    cannot: ["他店舗閲覧", "全店舗閲覧", "全店舗CSV", "商品マスター管理"]
+    can: ["自店舗棚卸入力", "自店舗履歴閲覧", "自店舗CSV出力", "自店舗商品マスター管理"],
+    cannot: ["他店舗閲覧", "全店舗閲覧", "全店舗CSV"]
   },
   {
     id: "urawa",
     name: "浦和道場店",
     role: "自店舗のみ",
-    can: ["自店舗棚卸入力", "自店舗履歴閲覧", "自店舗CSV出力"],
-    cannot: ["他店舗閲覧", "全店舗閲覧", "全店舗CSV", "商品マスター管理"]
+    can: ["自店舗棚卸入力", "自店舗履歴閲覧", "自店舗CSV出力", "自店舗商品マスター管理"],
+    cannot: ["他店舗閲覧", "全店舗閲覧", "全店舗CSV"]
   }
 ];
 const messages = {
@@ -2186,24 +2186,14 @@ function deleteProduct(productId) {
 }
 
 function switchScreen(screen) {
-  if (!state.isAdmin && screen === "master") {
-    screen = "count";
-  }
   elements.tabs.forEach((tab) => tab.classList.toggle("is-active", tab.dataset.screen === screen));
   elements.screens.forEach((section) => section.classList.toggle("is-active", section.id === `screen-${screen}`));
 }
 
 function applyStorePermissions() {
-  elements.tabs.forEach((tab) => {
-    if (tab.dataset.screen === "master") {
-      tab.hidden = !state.isAdmin;
-    }
-  });
   if (elements.exportAllCsvButton) {
     elements.exportAllCsvButton.hidden = !state.isAdmin;
   }
-  const activeMaster = document.querySelector("#screen-master")?.classList.contains("is-active");
-  if (!state.isAdmin && activeMaster) switchScreen("count");
 }
 
 function openQrModal() {

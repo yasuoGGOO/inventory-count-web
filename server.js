@@ -15,7 +15,7 @@ const SEED_STATE_FILE = path.join(ROOT, "inventory_state.json");
 const PFX_FILE = path.join(ROOT, "certs", "inventory-local.pfx");
 const PFX_PASSWORD = process.env.INVENTORY_HTTPS_PASSWORD || "inventory-local-dev";
 const USE_LOCAL_HTTPS = process.env.USE_LOCAL_HTTPS === "1";
-const APP_VERSION = "20260531-render-ready";
+const APP_VERSION = "20260531-store-master";
 
 process.on("uncaughtException", (error) => {
   fs.appendFileSync(ERROR_LOG, `${new Date().toISOString()} ${error.stack || error}\n`);
@@ -78,6 +78,8 @@ function isAuthorized(request) {
 
 function createStoreData() {
   return {
+    products: null,
+    productsUpdatedAt: null,
     counts: {},
     countUpdatedAt: {},
     tabletop: {},
@@ -96,6 +98,8 @@ function createInitialServerState() {
 
 function normalizeStoreData(value = {}) {
   return {
+    products: Array.isArray(value.products) ? value.products : null,
+    productsUpdatedAt: value.productsUpdatedAt ?? null,
     counts: value.counts && typeof value.counts === "object" ? value.counts : {},
     countUpdatedAt: value.countUpdatedAt && typeof value.countUpdatedAt === "object" ? value.countUpdatedAt : {},
     tabletop: value.tabletop && typeof value.tabletop === "object" ? value.tabletop : {},
@@ -140,6 +144,15 @@ function timestamp(value) {
   return Number.isFinite(time) ? time : 0;
 }
 
+function getStoreProducts(serverState, storeId) {
+  const storeProducts = serverState.stores?.[storeId]?.products;
+  return Array.isArray(storeProducts) ? storeProducts : serverState.products;
+}
+
+function getStoreProductsUpdatedAt(serverState, storeId) {
+  return serverState.stores?.[storeId]?.productsUpdatedAt || serverState.productsUpdatedAt;
+}
+
 function summarizeStore(storeData, products) {
   const rows = products.map((product) => {
     const quantity = Number(storeData.counts?.[product.id]);
@@ -164,13 +177,18 @@ function summarizeStore(storeData, products) {
 function buildClientState(serverState, user) {
   const storeData = normalizeStoreData(serverState.stores[user.storeId]);
   const progressEntries = user.isAdmin
-    ? storeSettings.map((store) => [store.id, summarizeStore(serverState.stores[store.id], serverState.products)])
-    : [[user.storeId, summarizeStore(storeData, serverState.products)]];
+    ? storeSettings.map((store) => [
+        store.id,
+        summarizeStore(normalizeStoreData(serverState.stores[store.id]), getStoreProducts(serverState, store.id))
+      ])
+    : [[user.storeId, summarizeStore(storeData, getStoreProducts(serverState, user.storeId))]];
 
   return {
-    products: serverState.products,
-    productsUpdatedAt: serverState.productsUpdatedAt,
+    products: getStoreProducts(serverState, user.storeId),
+    productsUpdatedAt: getStoreProductsUpdatedAt(serverState, user.storeId),
     ...storeData,
+    products: getStoreProducts(serverState, user.storeId),
+    productsUpdatedAt: getStoreProductsUpdatedAt(serverState, user.storeId),
     currentStoreId: user.storeId,
     currentStoreName: user.storeName,
     isAdmin: user.isAdmin,
@@ -196,7 +214,7 @@ function buildInventoryCsv(serverState, user, scope) {
 
   targetStores.forEach((store) => {
     const storeData = normalizeStoreData(serverState.stores[store.id]);
-    serverState.products.forEach((product) => {
+    getStoreProducts(serverState, store.id).forEach((product) => {
       const rawQuantity = storeData.counts?.[product.id];
       const quantity = rawQuantity === "" || rawQuantity === null || rawQuantity === undefined ? null : Number(rawQuantity);
       const hasQuantity = Number.isFinite(quantity);
@@ -279,16 +297,17 @@ function buildTabletopCsv(serverState, user, scope) {
 
   targetStores.forEach((store) => {
     const storeData = normalizeStoreData(serverState.stores[store.id]);
+    const products = getStoreProducts(serverState, store.id);
     let tabletopTotal = 0;
 
-    getTabletopProducts(serverState.products).forEach((product) => {
+    getTabletopProducts(products).forEach((product) => {
       const entry = getTabletopEntry(storeData, product.id);
       tabletopTotal += parseAmount(entry.last) + parseAmount(entry.purchase) - parseAmount(entry.current);
       appendTabletopCsvRow(rows, store, storeData, product, "卓上");
     });
 
     rows.push([store.id, store.name, "卓上合計", "", "卓上原価合計", "", "", "", "", tabletopTotal, storeData.savedAt || ""]);
-    appendTabletopCsvRow(rows, store, storeData, getFryOilProduct(serverState.products), "フライオイル");
+    appendTabletopCsvRow(rows, store, storeData, getFryOilProduct(products), "フライオイル");
   });
 
   return `\uFEFF${rows.map((row) => row.map(csvEscape).join(",")).join("\r\n")}\r\n`;
@@ -302,9 +321,9 @@ function mergeState(current, incoming, user) {
     return next;
   }
 
-  if (user.isAdmin && timestamp(incoming.productsUpdatedAt) > timestamp(next.productsUpdatedAt) && Array.isArray(incoming.products)) {
-    next.products = incoming.products;
-    next.productsUpdatedAt = incoming.productsUpdatedAt;
+  if (timestamp(incoming.productsUpdatedAt) > timestamp(store.productsUpdatedAt) && Array.isArray(incoming.products)) {
+    store.products = incoming.products;
+    store.productsUpdatedAt = incoming.productsUpdatedAt;
   } else if (!next.products.length && Array.isArray(incoming.products)) {
     next.products = incoming.products;
     next.productsUpdatedAt = incoming.productsUpdatedAt || incoming.savedAt || new Date().toISOString();
@@ -500,6 +519,10 @@ function serveFile(request, response) {
       return;
     }
 
+    if (requestedPath === "/app.js") {
+      data = Buffer.from(patchClientScriptForStoreMasters(data.toString("utf8")), "utf8");
+    }
+
     response.writeHead(200, {
       ...noIndexHeaders,
       "Content-Type": mimeTypes[path.extname(filePath)] || "application/octet-stream",
@@ -507,6 +530,55 @@ function serveFile(request, response) {
     });
     response.end(data);
   });
+}
+
+function patchClientScriptForStoreMasters(source) {
+  return source
+    .replaceAll("20260531-render-ready", APP_VERSION)
+    .replace(
+      'can: ["全店舗閲覧", "全店舗CSV出力", "商品マスター管理"],',
+      'can: ["全店舗閲覧", "全店舗CSV出力", "自店舗商品マスター管理"],'
+    )
+    .replaceAll(
+      'can: ["自店舗棚卸入力", "自店舗履歴閲覧", "自店舗CSV出力"],',
+      'can: ["自店舗棚卸入力", "自店舗履歴閲覧", "自店舗CSV出力", "自店舗商品マスター管理"],'
+    )
+    .replaceAll(
+      'cannot: ["他店舗閲覧", "全店舗閲覧", "全店舗CSV", "商品マスター管理"]',
+      'cannot: ["他店舗閲覧", "全店舗閲覧", "全店舗CSV"]'
+    )
+    .replace(
+      `function switchScreen(screen) {
+  if (!state.isAdmin && screen === "master") {
+    screen = "count";
+  }
+  elements.tabs.forEach((tab) => tab.classList.toggle("is-active", tab.dataset.screen === screen));
+  elements.screens.forEach((section) => section.classList.toggle("is-active", section.id === \`screen-\${screen}\`));
+}`,
+      `function switchScreen(screen) {
+  elements.tabs.forEach((tab) => tab.classList.toggle("is-active", tab.dataset.screen === screen));
+  elements.screens.forEach((section) => section.classList.toggle("is-active", section.id === \`screen-\${screen}\`));
+}`
+    )
+    .replace(
+      `function applyStorePermissions() {
+  elements.tabs.forEach((tab) => {
+    if (tab.dataset.screen === "master") {
+      tab.hidden = !state.isAdmin;
+    }
+  });
+  if (elements.exportAllCsvButton) {
+    elements.exportAllCsvButton.hidden = !state.isAdmin;
+  }
+  const activeMaster = document.querySelector("#screen-master")?.classList.contains("is-active");
+  if (!state.isAdmin && activeMaster) switchScreen("count");
+}`,
+      `function applyStorePermissions() {
+  if (elements.exportAllCsvButton) {
+    elements.exportAllCsvButton.hidden = !state.isAdmin;
+  }
+}`
+    );
 }
 
 async function handleRequest(request, response) {
