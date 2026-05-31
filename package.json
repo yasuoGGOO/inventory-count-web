@@ -1,0 +1,17 @@
+{
+  "name": "inventory-count-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Restaurant inventory count web app for pilot testing.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check app.js"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
