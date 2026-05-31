@@ -85,6 +85,7 @@ function createStoreData() {
     tabletop: {},
     tabletopUpdatedAt: {},
     inventoryArchives: [],
+    productMasterArchives: [],
     savedAt: null
   };
 }
@@ -106,6 +107,7 @@ function normalizeStoreData(value = {}) {
     tabletop: value.tabletop && typeof value.tabletop === "object" ? value.tabletop : {},
     tabletopUpdatedAt: value.tabletopUpdatedAt && typeof value.tabletopUpdatedAt === "object" ? value.tabletopUpdatedAt : {},
     inventoryArchives: Array.isArray(value.inventoryArchives) ? value.inventoryArchives : [],
+    productMasterArchives: Array.isArray(value.productMasterArchives) ? value.productMasterArchives : [],
     savedAt: value.savedAt ?? null
   };
 }
@@ -153,6 +155,27 @@ function getStoreProducts(serverState, storeId) {
 
 function getStoreProductsUpdatedAt(serverState, storeId) {
   return serverState.stores?.[storeId]?.productsUpdatedAt || serverState.productsUpdatedAt;
+}
+
+function buildProductMasterArchive(store, products, reason) {
+  const archivedAt = new Date().toISOString();
+  return {
+    id: `master-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    storeId: store.id,
+    storeName: store.name,
+    archivedAt,
+    reason,
+    productCount: products.length,
+    products: products.map((product) => ({ ...product }))
+  };
+}
+
+function archiveStoreProducts(storeData, store, products, reason) {
+  if (!Array.isArray(products) || !products.length) return;
+  storeData.productMasterArchives = [
+    buildProductMasterArchive(store, products, reason),
+    ...storeData.productMasterArchives
+  ].slice(0, 20);
 }
 
 function summarizeStore(storeData, products) {
@@ -230,6 +253,14 @@ function buildClientState(serverState, user) {
     currentStoreName: user.storeName,
     isAdmin: user.isAdmin,
     inventoryArchives: storeData.inventoryArchives,
+    productMasterArchives: storeData.productMasterArchives?.map((archive) => ({
+      id: archive.id,
+      storeId: archive.storeId,
+      storeName: archive.storeName,
+      archivedAt: archive.archivedAt,
+      reason: archive.reason,
+      productCount: archive.productCount
+    })) || [],
     storeProgress: Object.fromEntries(progressEntries)
   };
 }
@@ -351,6 +382,40 @@ function buildTabletopCsv(serverState, user, scope) {
   return `\uFEFF${rows.map((row) => row.map(csvEscape).join(",")).join("\r\n")}\r\n`;
 }
 
+function buildMonthlyArchiveCsv(serverState, user, scope) {
+  if (scope === "all" && !user.isAdmin) {
+    return null;
+  }
+
+  const targetStores = scope === "all" && user.isAdmin
+    ? storeSettings
+    : storeSettings.filter((store) => store.id === user.storeId);
+  const headers = ["店舗ID", "店舗名", "対象月", "締め日時", "棚卸額", "入力済み件数", "未入力件数", "商品数"];
+  const rows = [headers];
+
+  targetStores.forEach((store) => {
+    const storeData = normalizeStoreData(serverState.stores[store.id]);
+    storeData.inventoryArchives
+      .slice()
+      .sort((left, right) => timestamp(right.closedAt) - timestamp(left.closedAt))
+      .slice(0, 12)
+      .forEach((archive) => {
+        rows.push([
+          store.id,
+          store.name,
+          archive.month || "",
+          archive.closedAt || "",
+          archive.total || 0,
+          archive.counted || 0,
+          archive.missing || 0,
+          archive.productCount || 0
+        ]);
+      });
+  });
+
+  return `\uFEFF${rows.map((row) => row.map(csvEscape).join(",")).join("\r\n")}\r\n`;
+}
+
 function mergeState(current, incoming, user) {
   const next = normalizeServerState(current);
   const store = normalizeStoreData(next.stores[user.storeId]);
@@ -360,6 +425,7 @@ function mergeState(current, incoming, user) {
   }
 
   if (timestamp(incoming.productsUpdatedAt) > timestamp(store.productsUpdatedAt) && Array.isArray(incoming.products)) {
+    archiveStoreProducts(store, { id: user.storeId, name: user.storeName }, getStoreProducts(next, user.storeId), "before-store-master-update");
     store.products = incoming.products;
     store.productsUpdatedAt = incoming.productsUpdatedAt;
   } else if (!next.products.length && Array.isArray(incoming.products)) {
@@ -431,6 +497,7 @@ function publishAsakaMaster(current, user) {
 
   storeSettings.forEach((store) => {
     const storeData = normalizeStoreData(next.stores[store.id]);
+    archiveStoreProducts(storeData, store, getStoreProducts(next, store.id), "before-asaka-master-publish");
     storeData.products = sourceProducts.map((product) => ({ ...product }));
     storeData.productsUpdatedAt = updatedAt;
     next.stores[store.id] = storeData;
@@ -438,6 +505,14 @@ function publishAsakaMaster(current, user) {
 
   next.products = sourceProducts.map((product) => ({ ...product }));
   next.productsUpdatedAt = updatedAt;
+  return next;
+}
+
+function deleteMonthlyArchive(current, user, archiveId) {
+  const next = normalizeServerState(current);
+  const store = normalizeStoreData(next.stores[user.storeId]);
+  store.inventoryArchives = store.inventoryArchives.filter((archive) => archive.id !== archiveId);
+  next.stores[user.storeId] = store;
   return next;
 }
 
@@ -502,6 +577,26 @@ async function handleApi(request, response, user) {
     return;
   }
 
+  if (apiPath === "/api/monthly-archive/delete") {
+    if (request.method !== "POST") {
+      response.writeHead(405, { ...noIndexHeaders, "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Method not allowed" }));
+      return;
+    }
+
+    const body = await readRequestBody(request);
+    const payload = JSON.parse(body || "{}");
+    const deleted = deleteMonthlyArchive(readState(), user, String(payload.id || ""));
+    writeState(deleted);
+    response.writeHead(200, {
+      ...noIndexHeaders,
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store"
+    });
+    response.end(JSON.stringify({ state: buildClientState(deleted, user) }));
+    return;
+  }
+
   if (apiPath === "/api/export.csv") {
     if (request.method !== "GET") {
       response.writeHead(405, { ...noIndexHeaders, "Content-Type": "application/json; charset=utf-8" });
@@ -510,10 +605,14 @@ async function handleApi(request, response, user) {
     }
 
     const scope = url.searchParams.get("scope") === "all" ? "all" : "store";
-    const type = url.searchParams.get("type") === "tabletop" ? "tabletop" : "summary";
+    const requestedType = url.searchParams.get("type");
+    const type = ["tabletop", "monthly"].includes(requestedType) ? requestedType : "summary";
+    const currentState = readState();
     const csv = type === "tabletop"
-      ? buildTabletopCsv(readState(), user, scope)
-      : buildInventoryCsv(readState(), user, scope);
+      ? buildTabletopCsv(currentState, user, scope)
+      : type === "monthly"
+        ? buildMonthlyArchiveCsv(currentState, user, scope)
+        : buildInventoryCsv(currentState, user, scope);
     if (!csv) {
       response.writeHead(403, { ...noIndexHeaders, "Content-Type": "application/json; charset=utf-8" });
       response.end(JSON.stringify({ error: "Forbidden" }));

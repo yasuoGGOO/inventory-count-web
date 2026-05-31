@@ -871,6 +871,12 @@ td {
   vertical-align: middle;
 }
 
+.empty-table-cell {
+  padding: 18px;
+  color: var(--muted);
+  text-align: center;
+}
+
 th {
   background: #f0f4f1;
   font-size: 13px;

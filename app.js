@@ -96,7 +96,8 @@ const messages = {
     register: "登録",
     registeredOk: "登録されました",
     monthlyClose: "月次締め・入力リセット",
-    monthlyCloseConfirm: "現在の棚卸額合計を履歴に保存し、入力数量をリセットします。先にCSV出力が必要な場合はキャンセルしてください。",
+    monthlyCloseConfirm: "現在の棚卸額合計を履歴に保存し、入力数量をリセットします。集計CSVを出力してから月次締めします。",
+    monthlyCloseCsvNotice: "月次締め前に集計CSVを出力します",
     monthlyCloseDone: "月次締めを保存し、入力数量をリセットしました",
     lastClosedInventory: "前回締め棚卸額",
     lastClosedDate: "前回締め日時",
@@ -118,6 +119,14 @@ const messages = {
     tabCount: "棚卸入力",
     tabMaster: "商品マスター",
     tabSummary: "集計",
+    tabMonthly: "月次記録",
+    monthlyHistoryTitle: "月次棚卸記録",
+    monthlyHistoryLead: "月次締めで保存した棚卸額を12か月分確認します。",
+    monthlyHistoryCsv: "月次記録CSV",
+    monthlyNoHistory: "月次記録はまだありません",
+    monthlyDelete: "削除",
+    monthlyDeleteConfirm: "この月次記録を削除しますか？",
+    monthlyDeleted: "月次記録を削除しました",
     tabTabletop: "卓上原価計算",
     tabletopCost: "卓上原価",
     tabletopLead: "卓上商品の先月棚卸高、仕入れ額、今月棚卸高から卓上原価を計算します。",
@@ -204,7 +213,8 @@ const messages = {
     register: "မှတ်ပုံတင်",
     registeredOk: "မှတ်ပုံတင်ပြီးပါပြီ",
     monthlyClose: "လစဉ် ပိတ်ပြီး အရေအတွက် ပြန်လည်စမည်",
-    monthlyCloseConfirm: "လက်ရှိစာရင်းတန်ဖိုးကို မှတ်တမ်းသိမ်းပြီး အရေအတွက်များကို ဖျက်မည်။ CSV လိုအပ်ပါက Cancel ကိုနှိပ်ပါ။",
+    monthlyCloseConfirm: "လက်ရှိစာရင်းတန်ဖိုးကို မှတ်တမ်းသိမ်းပြီး CSV ထုတ်ပြီးနောက် အရေအတွက်များကို ဖျက်မည်။",
+    monthlyCloseCsvNotice: "လစဉ်ပိတ်မီ CSV ထုတ်မည်",
     monthlyCloseDone: "လစဉ်မှတ်တမ်းသိမ်းပြီး အရေအတွက်များကို ပြန်စထားသည်",
     lastClosedInventory: "နောက်ဆုံးပိတ် စာရင်းတန်ဖိုး",
     lastClosedDate: "နောက်ဆုံးပိတ်ချိန်",
@@ -226,6 +236,14 @@ const messages = {
     tabCount: "စာရင်းစစ် ထည့်ရန်",
     tabMaster: "ပစ္စည်းမာစတာ",
     tabSummary: "စုစုပေါင်း",
+    tabMonthly: "လစဉ်မှတ်တမ်း",
+    monthlyHistoryTitle: "လစဉ်စာရင်းမှတ်တမ်း",
+    monthlyHistoryLead: "လစဉ်ပိတ်ထားသော စာရင်းတန်ဖိုးကို 12 လစာ ကြည့်ပါ။",
+    monthlyHistoryCsv: "လစဉ် CSV",
+    monthlyNoHistory: "လစဉ်မှတ်တမ်း မရှိသေးပါ",
+    monthlyDelete: "ဖျက်မည်",
+    monthlyDeleteConfirm: "ဤလစဉ်မှတ်တမ်းကို ဖျက်မလား။",
+    monthlyDeleted: "လစဉ်မှတ်တမ်း ဖျက်ပြီးပါပြီ",
     tabTabletop: "စားပွဲပေါ်ပစ္စည်း ကုန်ကျစရိတ်",
     tabletopCost: "ကုန်ကျစရိတ်",
     tabletopLead: "စားပွဲပေါ်ပစ္စည်းများ၏ ပြီးခဲ့သည့်လစာရင်း၊ ဝယ်ယူငွေ၊ ယခုလစာရင်းမှ ကုန်ကျစရိတ်တွက်ပါ။",
@@ -312,7 +330,8 @@ const messages = {
     register: "Đăng ký",
     registeredOk: "Đã đăng ký",
     monthlyClose: "Chốt tháng và xóa số nhập",
-    monthlyCloseConfirm: "Lưu tổng giá trị kiểm kê hiện tại vào lịch sử và xóa số lượng đã nhập. Nếu cần xuất CSV trước, hãy hủy.",
+    monthlyCloseConfirm: "Lưu tổng giá trị kiểm kê hiện tại, xuất CSV rồi xóa số lượng đã nhập.",
+    monthlyCloseCsvNotice: "Sẽ xuất CSV trước khi chốt tháng",
     monthlyCloseDone: "Đã chốt tháng và xóa số lượng đã nhập",
     lastClosedInventory: "Giá trị chốt gần nhất",
     lastClosedDate: "Thời gian chốt gần nhất",
@@ -334,6 +353,14 @@ const messages = {
     tabCount: "Nhập kiểm kê",
     tabMaster: "Danh mục",
     tabSummary: "Tổng hợp",
+    tabMonthly: "Ghi chép tháng",
+    monthlyHistoryTitle: "Ghi chép kiểm kê tháng",
+    monthlyHistoryLead: "Xem giá trị kiểm kê đã chốt trong 12 tháng.",
+    monthlyHistoryCsv: "CSV ghi chép tháng",
+    monthlyNoHistory: "Chưa có ghi chép tháng",
+    monthlyDelete: "Xóa",
+    monthlyDeleteConfirm: "Xóa ghi chép tháng này?",
+    monthlyDeleted: "Đã xóa ghi chép tháng",
     tabTabletop: "Giá vốn đồ bàn",
     tabletopCost: "Giá vốn đồ bàn",
     tabletopLead: "Tính giá vốn đồ bàn từ tồn tháng trước, tiền nhập và tồn tháng này.",
@@ -597,6 +624,8 @@ const elements = {
   lastClosedTotal: document.querySelector("#lastClosedTotal"),
   lastClosedDate: document.querySelector("#lastClosedDate"),
   monthlyCloseButton: document.querySelector("#monthlyCloseButton"),
+  monthlyHistoryBody: document.querySelector("#monthlyHistoryBody"),
+  monthlyHistoryCsvButton: document.querySelector("#monthlyHistoryCsvButton"),
   toastMessage: document.querySelector("#toastMessage"),
   tabletopTotalCost: document.querySelector("#tabletopTotalCost"),
   tabletopCsvButton: document.querySelector("#tabletopCsvButton"),
@@ -1572,6 +1601,7 @@ function renderAll() {
   renderMasterOptions();
   renderTabletop();
   renderSummary();
+  renderMonthlyHistory();
   updateSaveStatus();
 }
 
@@ -1665,8 +1695,20 @@ function renderStoreDashboard() {
 
 function downloadCsv(scope = "store", type = "summary") {
   const safeScope = scope === "all" ? "all" : "store";
-  const safeType = type === "tabletop" ? "tabletop" : "summary";
+  const safeType = ["tabletop", "monthly"].includes(type) ? type : "summary";
   window.location.href = `./api/export.csv?scope=${safeScope}&type=${safeType}&t=${Date.now()}`;
+}
+
+function triggerCsvDownload(scope = "store", type = "summary") {
+  const safeScope = scope === "all" ? "all" : "store";
+  const safeType = ["tabletop", "monthly"].includes(type) ? type : "summary";
+  const link = document.createElement("a");
+  link.href = `./api/export.csv?scope=${safeScope}&type=${safeType}&t=${Date.now()}`;
+  link.target = "_blank";
+  link.rel = "noopener";
+  document.body.append(link);
+  link.click();
+  link.remove();
 }
 
 function renderMasterOptions() {
@@ -1921,6 +1963,41 @@ function getLatestInventoryArchive() {
     .sort((left, right) => getTimestamp(right.closedAt) - getTimestamp(left.closedAt))[0] || null;
 }
 
+function getMonthlyArchives() {
+  return [...(state.inventoryArchives || [])]
+    .sort((left, right) => getTimestamp(right.closedAt) - getTimestamp(left.closedAt))
+    .slice(0, 12);
+}
+
+function renderMonthlyHistory() {
+  if (!elements.monthlyHistoryBody) return;
+  const archives = getMonthlyArchives();
+  if (!archives.length) {
+    elements.monthlyHistoryBody.innerHTML = `
+      <tr>
+        <td colspan="7" class="empty-table-cell">${escapeHtml(t("monthlyNoHistory"))}</td>
+      </tr>
+    `;
+    return;
+  }
+
+  elements.monthlyHistoryBody.innerHTML = archives
+    .map((archive) => `
+      <tr>
+        <td>${escapeHtml(archive.month || "-")}</td>
+        <td>${archive.closedAt ? new Date(archive.closedAt).toLocaleString("ja-JP") : "-"}</td>
+        <td>${currency.format(archive.total || 0)}</td>
+        <td>${formatter.format(archive.counted || 0)}</td>
+        <td>${formatter.format(archive.missing || 0)}</td>
+        <td>${formatter.format(archive.productCount || 0)}</td>
+        <td>
+          <button type="button" data-delete-archive-id="${escapeHtml(archive.id)}">${escapeHtml(t("monthlyDelete"))}</button>
+        </td>
+      </tr>
+    `)
+    .join("");
+}
+
 function renderSummary() {
   const rows = getInventoryRows();
   const total = rows.reduce((sum, row) => sum + row.amount, 0);
@@ -1971,6 +2048,9 @@ async function closeMonthlyInventory() {
   if (!ok) return;
 
   try {
+    showToast(t("monthlyCloseCsvNotice"));
+    triggerCsvDownload("store", "summary");
+    await new Promise((resolve) => setTimeout(resolve, 700));
     const response = await fetch("./api/monthly-close", { method: "POST" });
     if (!response.ok) throw new Error(`Monthly close failed: ${response.status}`);
     const payload = await response.json();
@@ -1978,6 +2058,27 @@ async function closeMonthlyInventory() {
     clearPendingSync();
     isDirty = false;
     showToast(t("monthlyCloseDone"));
+  } catch {
+    showToast(t("syncFailed"));
+  }
+}
+
+async function deleteMonthlyArchive(archiveId) {
+  const ok = confirm(t("monthlyDeleteConfirm"));
+  if (!ok) return;
+
+  try {
+    const response = await fetch("./api/monthly-archive/delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: archiveId })
+    });
+    if (!response.ok) throw new Error(`Delete archive failed: ${response.status}`);
+    const payload = await response.json();
+    if (payload.state) replaceLocalState(payload.state);
+    clearPendingSync();
+    isDirty = false;
+    showToast(t("monthlyDeleted"));
   } catch {
     showToast(t("syncFailed"));
   }
@@ -2424,7 +2525,7 @@ function handleCalculatorInput(event) {
 
 function getInitialScreen() {
   const screen = new URLSearchParams(window.location.search).get("screen");
-  if (["count", "master", "tabletop", "summary"].includes(screen)) return screen;
+  if (["count", "master", "tabletop", "summary", "monthly"].includes(screen)) return screen;
 
   const page = window.location.pathname.split("/").pop();
   if (page === "manager.html") return "summary";
@@ -2500,6 +2601,7 @@ elements.publishMasterButton?.addEventListener("click", publishMasterToStores);
 elements.tabletopCsvButton?.addEventListener("click", () => downloadCsv("store", "tabletop"));
 elements.summaryCsvButton?.addEventListener("click", () => downloadCsv("store", "summary"));
 elements.monthlyCloseButton?.addEventListener("click", closeMonthlyInventory);
+elements.monthlyHistoryCsvButton?.addEventListener("click", () => downloadCsv("store", "monthly"));
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && !elements.qrModal.hidden) {
     closeQrModal();
@@ -2563,6 +2665,12 @@ elements.fryOilTableBody.addEventListener("change", (event) => {
   const input = event.target.closest("[data-tabletop-id]");
   if (!input) return;
   updateTabletopEntry(input.dataset.tabletopId, input.dataset.tabletopField, input.value);
+});
+
+elements.monthlyHistoryBody?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-delete-archive-id]");
+  if (!button) return;
+  deleteMonthlyArchive(button.dataset.deleteArchiveId);
 });
 
 applyLanguage();

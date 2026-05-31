@@ -40,6 +40,7 @@
       <button class="tab" type="button" data-screen="master" data-i18n="tabMaster">商品マスター</button>
       <button class="tab" type="button" data-screen="tabletop" data-i18n="tabTabletop">卓上原価計算</button>
       <button class="tab" type="button" data-screen="summary" data-i18n="tabSummary">集計</button>
+      <button class="tab" type="button" data-screen="monthly" data-i18n="tabMonthly">月次記録</button>
     </nav>
 
     <main>
@@ -302,6 +303,33 @@
             <h3 data-i18n="missingProducts">未入力の商品</h3>
             <div id="missingList" class="missing-list"></div>
           </section>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-monthly" aria-labelledby="monthlyHistoryTitle">
+        <div class="section-heading">
+          <div>
+            <h2 id="monthlyHistoryTitle" data-i18n="monthlyHistoryTitle">月次棚卸記録</h2>
+            <p data-i18n="monthlyHistoryLead">月次締めで保存した棚卸額を12か月分確認します。</p>
+          </div>
+          <button class="primary-action csv-action" id="monthlyHistoryCsvButton" type="button" data-i18n="monthlyHistoryCsv">月次記録CSV</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>対象月</th>
+                <th>締め日時</th>
+                <th>棚卸額</th>
+                <th>入力済み</th>
+                <th>未入力</th>
+                <th>商品数</th>
+                <th data-i18n="actions">操作</th>
+              </tr>
+            </thead>
+            <tbody id="monthlyHistoryBody"></tbody>
+          </table>
         </div>
       </section>
     </main>
