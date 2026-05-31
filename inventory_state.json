@@ -1,0 +1,1123 @@
+{
+  "products": [
+    {
+      "id": "sheet-wxit9b",
+      "name": "北の味噌",
+      "category": "食材 No.1",
+      "unit": "kg",
+      "price": 840
+    },
+    {
+      "id": "sheet-160ike",
+      "name": "リズム焙煎味噌ラーメンスープ",
+      "category": "食材 No.1",
+      "unit": "kg",
+      "price": 1075
+    },
+    {
+      "id": "sheet-edws83",
+      "name": "トンコツかえし",
+      "category": "食材 No.1",
+      "unit": "本",
+      "price": 1480
+    },
+    {
+      "id": "sheet-enjbiy",
+      "name": "リズム醤油かえし",
+      "category": "食材 No.1",
+      "unit": "kg",
+      "price": 851
+    },
+    {
+      "id": "sheet-17jlwke",
+      "name": "塩かえし",
+      "category": "食材 No.1",
+      "unit": "kg",
+      "price": 1274
+    },
+    {
+      "id": "sheet-ajz98b",
+      "name": "麺ストレート",
+      "category": "食材 No.1",
+      "unit": "食",
+      "price": 66.15
+    },
+    {
+      "id": "sheet-ppvuv",
+      "name": "麺ウェーブ細",
+      "category": "食材 No.1",
+      "unit": "食",
+      "price": 66.58
+    },
+    {
+      "id": "sheet-kfxmp",
+      "name": "麺ウェーブ太",
+      "category": "食材 No.1",
+      "unit": "食",
+      "price": 66.58
+    },
+    {
+      "id": "sheet-sf4eqg",
+      "name": "無洗米(UCC/種商)",
+      "category": "食材 No.1",
+      "unit": "kg/P",
+      "price": 583
+    },
+    {
+      "id": "sheet-1jlek1v",
+      "name": "米(地場仕入)",
+      "category": "食材 No.1",
+      "unit": "kg",
+      "price": 0
+    },
+    {
+      "id": "sheet-8i2ins",
+      "name": "万能調味料",
+      "category": "食材 No.1",
+      "unit": "P",
+      "price": 1524
+    },
+    {
+      "id": "sheet-y2dewd",
+      "name": "薄口醤油",
+      "category": "食材 No.1",
+      "unit": "L",
+      "price": 253
+    },
+    {
+      "id": "sheet-1g8n08d",
+      "name": "リズム旨味タレ",
+      "category": "食材 No.1",
+      "unit": "L",
+      "price": 628
+    },
+    {
+      "id": "sheet-sac52z",
+      "name": "ポークオイルAT",
+      "category": "食材 No.1",
+      "unit": "kg",
+      "price": 499
+    },
+    {
+      "id": "sheet-vxiam0",
+      "name": "コーン＆キャノーラ",
+      "category": "食材 No.1",
+      "unit": "缶",
+      "price": 7217
+    },
+    {
+      "id": "sheet-16bham9",
+      "name": "落花生油",
+      "category": "食材 No.1",
+      "unit": "kg",
+      "price": 1907
+    },
+    {
+      "id": "sheet-1i0x5id",
+      "name": "ガーリックオイル",
+      "category": "食材 No.1",
+      "unit": "kg/P",
+      "price": 1136
+    },
+    {
+      "id": "sheet-rj9oi7",
+      "name": "特製ネギ油",
+      "category": "食材 No.1",
+      "unit": "kg",
+      "price": 2778
+    },
+    {
+      "id": "sheet-1a33u6j",
+      "name": "ラー油",
+      "category": "食材 No.1",
+      "unit": "本",
+      "price": 2810
+    },
+    {
+      "id": "sheet-1c6ixlz",
+      "name": "ポリごま油",
+      "category": "食材 No.1",
+      "unit": "本",
+      "price": 2539
+    },
+    {
+      "id": "sheet-18rfyow",
+      "name": "旨味脂",
+      "category": "食材 No.1",
+      "unit": "P",
+      "price": 3538
+    },
+    {
+      "id": "sheet-2u2knc",
+      "name": "マー油",
+      "category": "食材 No.1",
+      "unit": "kg",
+      "price": 1758
+    },
+    {
+      "id": "sheet-d9x0ob",
+      "name": "和ぶしオイル",
+      "category": "食材 No.1",
+      "unit": "kg",
+      "price": 2521
+    },
+    {
+      "id": "sheet-wx8igw",
+      "name": "唐揚げつけ込みのタレ",
+      "category": "食材 No.1",
+      "unit": "P",
+      "price": 324
+    },
+    {
+      "id": "sheet-1tdednv",
+      "name": "冷し中華ごまぴり辛",
+      "category": "食材 No.1",
+      "unit": "kg/P",
+      "price": 1000
+    },
+    {
+      "id": "sheet-flqbyq",
+      "name": "冷やし中華醤油ダレ",
+      "category": "食材 No.1",
+      "unit": "本",
+      "price": 2405
+    },
+    {
+      "id": "sheet-d1egyd",
+      "name": "冷し中華梅タレ",
+      "category": "食材 No.1",
+      "unit": "本",
+      "price": 2160
+    },
+    {
+      "id": "sheet-9sc1yg",
+      "name": "油そばのたれ",
+      "category": "食材 No.1",
+      "unit": "本",
+      "price": 2427
+    },
+    {
+      "id": "sheet-1u49oei",
+      "name": "つけ麺タレ",
+      "category": "食材 No.1",
+      "unit": "kg/P",
+      "price": 910
+    },
+    {
+      "id": "sheet-1wspxdp",
+      "name": "担々ラー油",
+      "category": "食材 No.1",
+      "unit": "kg",
+      "price": 1560
+    },
+    {
+      "id": "sheet-c2ei9y",
+      "name": "まぶし粉",
+      "category": "食材 No.1",
+      "unit": "kg/P",
+      "price": 197
+    },
+    {
+      "id": "sheet-1tidbqj",
+      "name": "バッター粉",
+      "category": "食材 No.1",
+      "unit": "kg/P",
+      "price": 740
+    },
+    {
+      "id": "sheet-bswozv",
+      "name": "片栗粉",
+      "category": "食材 No.1",
+      "unit": "kg/P",
+      "price": 359
+    },
+    {
+      "id": "sheet-znkknx",
+      "name": "味付メンマ",
+      "category": "食材 No.1",
+      "unit": "kg/P",
+      "price": 751
+    },
+    {
+      "id": "sheet-awl541",
+      "name": "リズム焼飯",
+      "category": "食材 No.1",
+      "unit": "kg/P",
+      "price": 538
+    },
+    {
+      "id": "sheet-l6qjf0",
+      "name": "焼海苔",
+      "category": "食材 No.1",
+      "unit": "枚",
+      "price": 6.3
+    },
+    {
+      "id": "sheet-enh88q",
+      "name": "つぼ漬け",
+      "category": "食材 No.1",
+      "unit": "P",
+      "price": 381
+    },
+    {
+      "id": "sheet-hffhng",
+      "name": "カリカリガーリック",
+      "category": "食材 No.1",
+      "unit": "kg/P",
+      "price": 4000
+    },
+    {
+      "id": "sheet-19fiwmp",
+      "name": "バター",
+      "category": "食材 No.1",
+      "unit": "個",
+      "price": 40.3
+    },
+    {
+      "id": "sheet-pp4i18",
+      "name": "とんこつスープ",
+      "category": "食材 No.1",
+      "unit": "kg/P",
+      "price": 1088
+    },
+    {
+      "id": "sheet-qbtgw0",
+      "name": "PBガラーNS 1010",
+      "category": "食材 No.1",
+      "unit": "g",
+      "price": 1.54
+    },
+    {
+      "id": "sheet-18fs29f",
+      "name": "茹で餃子",
+      "category": "食材 No.1",
+      "unit": "個",
+      "price": 25.82
+    },
+    {
+      "id": "sheet-1tnhid2",
+      "name": "焼き餃子",
+      "category": "食材 No.1",
+      "unit": "個",
+      "price": 18.73
+    },
+    {
+      "id": "sheet-samm8v",
+      "name": "スーパースイートコーン",
+      "category": "食材 No.1",
+      "unit": "kg/P",
+      "price": 500
+    },
+    {
+      "id": "sheet-1duu5yt",
+      "name": "鶏モモ肉",
+      "category": "食材 No.1",
+      "unit": "kg",
+      "price": 708
+    },
+    {
+      "id": "sheet-1a2mvp7",
+      "name": "風風パーコー",
+      "category": "食材 No.1",
+      "unit": "枚",
+      "price": 130
+    },
+    {
+      "id": "sheet-1con5jv",
+      "name": "チャーシュー",
+      "category": "食材 No.1",
+      "unit": "kg",
+      "price": 1942
+    },
+    {
+      "id": "sheet-eldo75",
+      "name": "ソーセージ",
+      "category": "食材 No.1",
+      "unit": "P",
+      "price": 252
+    },
+    {
+      "id": "sheet-1uzzo0o",
+      "name": "まろやか鶏白湯",
+      "category": "食材 No.1",
+      "unit": "kg",
+      "price": 1300
+    },
+    {
+      "id": "sheet-1iczxgr",
+      "name": "肉そぼろ",
+      "category": "食材 No.1",
+      "unit": "kg/P",
+      "price": 1229
+    },
+    {
+      "id": "sheet-1umgdhn",
+      "name": "きぬさや",
+      "category": "食材 No.1",
+      "unit": "P",
+      "price": 498
+    },
+    {
+      "id": "sheet-107t0p1",
+      "name": "ポテト",
+      "category": "食材 No.1",
+      "unit": "kg/P",
+      "price": 550
+    },
+    {
+      "id": "sheet-hwf8x4",
+      "name": "春巻き 10本",
+      "category": "食材 No.1",
+      "unit": "個",
+      "price": 41
+    },
+    {
+      "id": "sheet-1wwh63w",
+      "name": "軟骨の唐揚げ",
+      "category": "食材 No.1",
+      "unit": "kg",
+      "price": 879
+    },
+    {
+      "id": "sheet-3a9xwa",
+      "name": "クレープ苺ミルク",
+      "category": "食材 No.1",
+      "unit": "本",
+      "price": 167
+    },
+    {
+      "id": "sheet-142jhxw",
+      "name": "クレープチョコバナナ",
+      "category": "食材 No.1",
+      "unit": "本",
+      "price": 167
+    },
+    {
+      "id": "sheet-8bz7d3",
+      "name": "クレープWチョコ",
+      "category": "食材 No.1",
+      "unit": "本",
+      "price": 167
+    },
+    {
+      "id": "sheet-fs4kcf",
+      "name": "T/O容器ラーメン 本体",
+      "category": "テイク資材",
+      "unit": "枚",
+      "price": 0
+    },
+    {
+      "id": "sheet-cseimi",
+      "name": "T/O容器ラーメン 中皿",
+      "category": "テイク資材",
+      "unit": "枚",
+      "price": 0
+    },
+    {
+      "id": "sheet-57a4z1",
+      "name": "T/O容器ラーメン 蓋",
+      "category": "テイク資材",
+      "unit": "枚",
+      "price": 0
+    },
+    {
+      "id": "sheet-xvfb96",
+      "name": "T/O容器 白",
+      "category": "テイク資材",
+      "unit": "枚",
+      "price": 0
+    },
+    {
+      "id": "sheet-13cgudy",
+      "name": "T/O容器 弁当本体＋蓋",
+      "category": "テイク資材",
+      "unit": "枚",
+      "price": 0
+    },
+    {
+      "id": "sheet-1xapw84",
+      "name": "トマト",
+      "category": "フェア食材",
+      "unit": "個",
+      "price": 0
+    },
+    {
+      "id": "sheet-4u8x5c",
+      "name": "キューリ",
+      "category": "フェア食材",
+      "unit": "個",
+      "price": 0
+    },
+    {
+      "id": "sheet-1js0xzv",
+      "name": "大葉",
+      "category": "フェア食材",
+      "unit": "枚",
+      "price": 98
+    },
+    {
+      "id": "sheet-z0qgvo",
+      "name": "梅だれ 1.1kg",
+      "category": "フェア食材",
+      "unit": "本",
+      "price": 1300
+    },
+    {
+      "id": "sheet-1togege",
+      "name": "おにぎりの素 かりかり梅500g",
+      "category": "フェア食材",
+      "unit": "g",
+      "price": 2.6
+    },
+    {
+      "id": "sheet-1o622ul",
+      "name": "手羽先",
+      "category": "食材 No.2",
+      "unit": "kg/P",
+      "price": 2132
+    },
+    {
+      "id": "sheet-161gn25",
+      "name": "手羽先のタレ",
+      "category": "食材 No.2",
+      "unit": "本",
+      "price": 680
+    },
+    {
+      "id": "sheet-19djt61",
+      "name": "にんにく唐辛子",
+      "category": "食材 No.2",
+      "unit": "kg",
+      "price": 6431
+    },
+    {
+      "id": "sheet-1demk4",
+      "name": "輪切り唐辛子",
+      "category": "食材 No.2",
+      "unit": "p",
+      "price": 475
+    },
+    {
+      "id": "sheet-z5rwl9",
+      "name": "山椒",
+      "category": "食材 No.2",
+      "unit": "p",
+      "price": 500
+    },
+    {
+      "id": "sheet-1qfz8a9",
+      "name": "おろし生姜",
+      "category": "食材 No.2",
+      "unit": "kg",
+      "price": 929
+    },
+    {
+      "id": "sheet-1i7l6n6",
+      "name": "おろしにんにく",
+      "category": "食材 No.2",
+      "unit": "kg",
+      "price": 1000
+    },
+    {
+      "id": "sheet-1hx2djb",
+      "name": "冷水ウーロン茶",
+      "category": "食材 No.2",
+      "unit": "P",
+      "price": 19
+    },
+    {
+      "id": "sheet-favq4k",
+      "name": "ホワイトペッパー",
+      "category": "食材 No.2",
+      "unit": "kg",
+      "price": 2150
+    },
+    {
+      "id": "sheet-1us8wzo",
+      "name": "秘伝・赤みそ",
+      "category": "食材 No.2",
+      "unit": "kg",
+      "price": 1248
+    },
+    {
+      "id": "sheet-1iabusv",
+      "name": "りんご酢",
+      "category": "食材 No.2",
+      "unit": "L",
+      "price": 256
+    },
+    {
+      "id": "sheet-rmh0f",
+      "name": "穀物酢",
+      "category": "食材 No.2",
+      "unit": "L",
+      "price": 227
+    },
+    {
+      "id": "sheet-1yjmt84",
+      "name": "餃子のたれ",
+      "category": "食材 No.2",
+      "unit": "L",
+      "price": 594
+    },
+    {
+      "id": "sheet-wazly",
+      "name": "ブラックペッパー",
+      "category": "食材 No.2",
+      "unit": "g",
+      "price": 3.7
+    },
+    {
+      "id": "sheet-17bhahc",
+      "name": "紅生姜千切",
+      "category": "食材 No.2",
+      "unit": "P",
+      "price": 686
+    },
+    {
+      "id": "sheet-t1e0hz",
+      "name": "風風からし高菜",
+      "category": "食材 No.2",
+      "unit": "P",
+      "price": 635
+    },
+    {
+      "id": "sheet-ucqn5c",
+      "name": "中力粉(日清 雪)",
+      "category": "食材 No.2",
+      "unit": "kg",
+      "price": 343
+    },
+    {
+      "id": "sheet-10q4ggr",
+      "name": "ケチャップ",
+      "category": "食材 No.2",
+      "unit": "kg",
+      "price": 391
+    },
+    {
+      "id": "sheet-1wud9r3",
+      "name": "いりゴマ（白）",
+      "category": "食材 No.2",
+      "unit": "kg/P",
+      "price": 600
+    },
+    {
+      "id": "sheet-y83vrt",
+      "name": "塩",
+      "category": "食材 No.2",
+      "unit": "kg",
+      "price": 100
+    },
+    {
+      "id": "sheet-1ds833e",
+      "name": "上白砂糖",
+      "category": "食材 No.2",
+      "unit": "kg/P",
+      "price": 312
+    },
+    {
+      "id": "sheet-1dtli2p",
+      "name": "マヨネーズ",
+      "category": "食材 No.2",
+      "unit": "kg",
+      "price": 544
+    },
+    {
+      "id": "sheet-1m1qsv3",
+      "name": "からし",
+      "category": "食材 No.2",
+      "unit": "本",
+      "price": 100
+    },
+    {
+      "id": "sheet-3knpbh",
+      "name": "黒胡麻",
+      "category": "食材 No.2",
+      "unit": "g",
+      "price": 1
+    },
+    {
+      "id": "sheet-15t6pok",
+      "name": "カット白髪ねぎ",
+      "category": "食材 No.2",
+      "unit": "kg",
+      "price": 1316
+    },
+    {
+      "id": "sheet-9psai7",
+      "name": "青ねぎ",
+      "category": "食材 No.2",
+      "unit": "kg",
+      "price": 954
+    },
+    {
+      "id": "sheet-1q5vgsx",
+      "name": "白ねぎ 小口切",
+      "category": "食材 No.2",
+      "unit": "kg",
+      "price": 1334
+    },
+    {
+      "id": "sheet-1doiyh7",
+      "name": "もやし",
+      "category": "食材 No.2",
+      "unit": "1袋",
+      "price": 49
+    },
+    {
+      "id": "sheet-1md7woq",
+      "name": "卵",
+      "category": "食材 No.2",
+      "unit": "個",
+      "price": 23
+    },
+    {
+      "id": "sheet-rbia2e",
+      "name": "サニーレタス",
+      "category": "食材 No.2",
+      "unit": "株",
+      "price": 200
+    },
+    {
+      "id": "sheet-183wqyb",
+      "name": "唐揚げ仕込",
+      "category": "食材 No.2",
+      "unit": "kg",
+      "price": 893
+    },
+    {
+      "id": "sheet-1ptgygf",
+      "name": "味噌ダレ仕込み",
+      "category": "食材 No.2",
+      "unit": "kg",
+      "price": 958
+    },
+    {
+      "id": "sheet-12n37pv",
+      "name": "カキフライ",
+      "category": "食材 No.2",
+      "unit": "個",
+      "price": 120
+    },
+    {
+      "id": "sheet-h9lr5s",
+      "name": "練り胡麻",
+      "category": "食材 No.2",
+      "unit": "kg",
+      "price": 1110
+    },
+    {
+      "id": "sheet-1yowo68",
+      "name": "酢豚ソース",
+      "category": "食材 No.2",
+      "unit": "kg",
+      "price": 859
+    },
+    {
+      "id": "sheet-6g5q2r",
+      "name": "タルタルソース",
+      "category": "食材 No.2",
+      "unit": "g",
+      "price": 0.96
+    },
+    {
+      "id": "sheet-pfo9nx",
+      "name": "チリパウダー",
+      "category": "食材 No.2",
+      "unit": "g",
+      "price": 2
+    },
+    {
+      "id": "sheet-pvtth2",
+      "name": "明太子(ばらこ)",
+      "category": "食材 No.2",
+      "unit": "g",
+      "price": 2.7
+    },
+    {
+      "id": "sheet-1xv2iek",
+      "name": "豆板醤",
+      "category": "食材 No.2",
+      "unit": "g",
+      "price": 1
+    },
+    {
+      "id": "sheet-1ldk1ft",
+      "name": "豆乳鍋スープ",
+      "category": "食材 No.2",
+      "unit": "g",
+      "price": 240
+    },
+    {
+      "id": "sheet-1tsgjs7",
+      "name": "トマトガーリック",
+      "category": "食材 No.2",
+      "unit": "g",
+      "price": 22.5
+    },
+    {
+      "id": "sheet-5s0eoh",
+      "name": "ゴマドレッシング",
+      "category": "食材 No.2",
+      "unit": "g",
+      "price": 100
+    },
+    {
+      "id": "sheet-1fv6z67",
+      "name": "食研つゆ",
+      "category": "食材 No.2",
+      "unit": "L",
+      "price": 730
+    },
+    {
+      "id": "sheet-1a7nfeo",
+      "name": "ほぐし鶏",
+      "category": "食材 No.2",
+      "unit": "g",
+      "price": 1.7
+    },
+    {
+      "id": "sheet-vog3vj",
+      "name": "オイスターソース815",
+      "category": "食材 No.2",
+      "unit": "g",
+      "price": 1.3
+    },
+    {
+      "id": "sheet-juyx4a",
+      "name": "激辛四川ラー油",
+      "category": "食材 No.2",
+      "unit": "g",
+      "price": 1.6
+    },
+    {
+      "id": "sheet-fxa48a",
+      "name": "赤マー油",
+      "category": "食材 No.2",
+      "unit": "g",
+      "price": 2.2
+    },
+    {
+      "id": "sheet-hy66tn",
+      "name": "パワフル",
+      "category": "食材 No.2",
+      "unit": "個",
+      "price": 4.8
+    },
+    {
+      "id": "sheet-82qjx8",
+      "name": "ポッカレモン",
+      "category": "食材 No.2",
+      "unit": "cc",
+      "price": 2
+    },
+    {
+      "id": "sheet-1iyk4om",
+      "name": "オレンジ",
+      "category": "ドリンク",
+      "unit": "本",
+      "price": 70
+    },
+    {
+      "id": "sheet-b2sbwv",
+      "name": "コーラ",
+      "category": "ドリンク",
+      "unit": "本",
+      "price": 83
+    },
+    {
+      "id": "sheet-1ewjg64",
+      "name": "ドライゼロ（30本）",
+      "category": "ドリンク",
+      "unit": "本",
+      "price": 130
+    },
+    {
+      "id": "sheet-1awmvg4",
+      "name": "スーパードライ",
+      "category": "酒類",
+      "unit": "L",
+      "price": 0
+    },
+    {
+      "id": "sheet-svfwz9",
+      "name": "瓶ビール（20本）",
+      "category": "酒類",
+      "unit": "本",
+      "price": 250
+    },
+    {
+      "id": "sheet-p1pdw9",
+      "name": "ガスボンベ",
+      "category": "備品",
+      "unit": "kg",
+      "price": 0
+    },
+    {
+      "id": "sheet-170rg4t",
+      "name": "とんこつ",
+      "category": "仕込品",
+      "unit": "個",
+      "price": 20
+    },
+    {
+      "id": "sheet-ys6qox",
+      "name": "しょうゆ",
+      "category": "仕込品",
+      "unit": "個",
+      "price": 31
+    },
+    {
+      "id": "sheet-fhw39r",
+      "name": "みそ",
+      "category": "仕込品",
+      "unit": "個",
+      "price": 53
+    },
+    {
+      "id": "sheet-fh65pg",
+      "name": "しお",
+      "category": "仕込品",
+      "unit": "個",
+      "price": 33
+    },
+    {
+      "id": "sheet-lu4375",
+      "name": "担々",
+      "category": "仕込品",
+      "unit": "個",
+      "price": 109
+    },
+    {
+      "id": "sheet-1ifr9o8",
+      "name": "つけ麺",
+      "category": "仕込品",
+      "unit": "個",
+      "price": 45
+    },
+    {
+      "id": "sheet-fdagic",
+      "name": "混合油",
+      "category": "仕込品",
+      "unit": "本",
+      "price": 2325
+    },
+    {
+      "id": "sheet-8z1sv7",
+      "name": "油そばの油",
+      "category": "仕込品",
+      "unit": "本",
+      "price": 1873
+    },
+    {
+      "id": "sheet-wthqjk",
+      "name": "煮玉子",
+      "category": "仕込品",
+      "unit": "個",
+      "price": 23
+    },
+    {
+      "id": "sheet-7kgz59",
+      "name": "煮玉子タレ",
+      "category": "仕込品",
+      "unit": "個",
+      "price": 157
+    },
+    {
+      "id": "sheet-1x0t31t",
+      "name": "南蛮タレ",
+      "category": "仕込品",
+      "unit": "g",
+      "price": 1
+    },
+    {
+      "id": "sheet-1osuybg",
+      "name": "T/O容器ラーメン本体",
+      "category": "テイク資材 No.4",
+      "unit": "枚",
+      "price": 27
+    },
+    {
+      "id": "sheet-1lt4wlj",
+      "name": "T/O容器ラーメン中皿",
+      "category": "テイク資材 No.4",
+      "unit": "枚",
+      "price": 20
+    },
+    {
+      "id": "sheet-1irstzk",
+      "name": "T/O容器ラーメン蓋",
+      "category": "テイク資材 No.4",
+      "unit": "枚",
+      "price": 19
+    },
+    {
+      "id": "sheet-kiw3n7",
+      "name": "T/O袋 小",
+      "category": "テイク資材 No.4",
+      "unit": "枚",
+      "price": 3
+    },
+    {
+      "id": "sheet-1fa55pc",
+      "name": "T/O袋 中(弁当)",
+      "category": "テイク資材 No.4",
+      "unit": "枚",
+      "price": 3
+    },
+    {
+      "id": "sheet-kigryj",
+      "name": "T/O袋 大",
+      "category": "テイク資材 No.4",
+      "unit": "枚",
+      "price": 0
+    },
+    {
+      "id": "sheet-4t1oou",
+      "name": "T/O容器 白",
+      "category": "テイク資材 No.4",
+      "unit": "個",
+      "price": 30
+    },
+    {
+      "id": "sheet-h68hec",
+      "name": "T/O容器 弁当本体＋蓋",
+      "category": "テイク資材 No.4",
+      "unit": "個",
+      "price": 26
+    },
+    {
+      "id": "sheet-8cn33u",
+      "name": "タレビン 小",
+      "category": "テイク資材 No.4",
+      "unit": "個",
+      "price": 6
+    },
+    {
+      "id": "sheet-1fvdyz0",
+      "name": "タレビン 角中",
+      "category": "テイク資材 No.4",
+      "unit": "個",
+      "price": 9
+    },
+    {
+      "id": "sheet-lktytt",
+      "name": "卓上 ラー油",
+      "category": "卓上",
+      "unit": "個",
+      "price": 0
+    },
+    {
+      "id": "sheet-lly4rs",
+      "name": "卓上 冷水ウーロン茶",
+      "category": "卓上",
+      "unit": "個",
+      "price": 0
+    },
+    {
+      "id": "sheet-1gx04sd",
+      "name": "卓上 ホワイトペッパー",
+      "category": "卓上",
+      "unit": "個",
+      "price": 0
+    },
+    {
+      "id": "sheet-ckhhh9",
+      "name": "卓上 秘伝・赤みそ",
+      "category": "卓上",
+      "unit": "個",
+      "price": 0
+    },
+    {
+      "id": "sheet-1b2kcw8",
+      "name": "卓上 りんご酢",
+      "category": "卓上",
+      "unit": "個",
+      "price": 0
+    },
+    {
+      "id": "sheet-wm2xqc",
+      "name": "卓上 穀物酢",
+      "category": "卓上",
+      "unit": "個",
+      "price": 0
+    },
+    {
+      "id": "sheet-1nxxfh5",
+      "name": "卓上 餃子のたれ",
+      "category": "卓上",
+      "unit": "個",
+      "price": 0
+    },
+    {
+      "id": "sheet-1srz51g",
+      "name": "卓上 ブラックペッパー",
+      "category": "卓上",
+      "unit": "個",
+      "price": 0
+    },
+    {
+      "id": "sheet-wprwq9",
+      "name": "卓上 紅生姜千切",
+      "category": "卓上",
+      "unit": "個",
+      "price": 0
+    },
+    {
+      "id": "sheet-1vrdtpk",
+      "name": "卓上 風風からし高菜",
+      "category": "卓上",
+      "unit": "個",
+      "price": 0
+    },
+    {
+      "id": "sheet-43xzua",
+      "name": "卓上 山椒",
+      "category": "卓上",
+      "unit": "個",
+      "price": 0
+    }
+  ],
+  "productsUpdatedAt": "2026-05-27T17:29:28.936Z",
+  "stores": {
+    "asaka": {
+      "counts": {
+        "sheet-wxit9b": 1,
+        "sheet-enjbiy": 2,
+        "sheet-1us8wzo": 1.12
+      },
+      "countUpdatedAt": {
+        "sheet-wxit9b": "2026-05-27T13:16:07.758Z",
+        "sheet-enjbiy": "2026-05-27T13:02:15.450Z",
+        "sheet-160ike": "2026-05-27T13:15:53.644Z",
+        "sheet-1us8wzo": "2026-05-27T17:30:54.748Z"
+      },
+      "tabletop": {},
+      "tabletopUpdatedAt": {},
+      "savedAt": "2026-05-27T17:30:54.753Z"
+    },
+    "kumagaya": {
+      "counts": {
+        "sheet-wxit9b": 11
+      },
+      "countUpdatedAt": {
+        "sheet-wxit9b": "2026-05-31T06:38:30.328Z"
+      },
+      "tabletop": {},
+      "tabletopUpdatedAt": {},
+      "savedAt": "2026-05-31T06:38:30.336Z"
+    },
+    "urawa": {
+      "counts": {
+        "sheet-wxit9b": 1
+      },
+      "countUpdatedAt": {
+        "sheet-wxit9b": "2026-05-31T07:33:36.241Z"
+      },
+      "tabletop": {},
+      "tabletopUpdatedAt": {},
+      "savedAt": "2026-05-31T07:33:36.249Z"
+    }
+  }
+}
