@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex,nofollow,noarchive">
     <title>棚卸カウント表</title>
-    <link rel="stylesheet" href="./app.css?v=20260531-render-ready">
+    <link rel="stylesheet" href="./app.css?v=20260601-monthly-master">
   </head>
   <body>
     <header class="app-header">
@@ -24,7 +24,7 @@
           <button type="button" data-lang="vi">Tiếng Việt</button>
         </div>
         <button class="qr-card header-qr" id="openQrButton" type="button" aria-label="棚卸入力QRコード" data-i18n-aria-label="staffQr">
-          <img src="./staff-qr.png?v=20260531-render-ready" alt="棚卸入力QRコード" data-i18n-alt="staffQr">
+          <img src="./staff-qr.png?v=20260601-monthly-master" alt="棚卸入力QRコード" data-i18n-alt="staffQr">
           <div>
             <strong data-i18n="staffQrHelper">入力補助者はQRコードからログイン</strong>
             <span>公開URL / staff</span>
@@ -120,6 +120,7 @@
             <div class="store-dashboard-actions" aria-label="CSV出力">
               <button class="csv-action" id="exportStoreCsvButton" type="button">自店舗CSV</button>
               <button class="primary-action csv-action" id="exportAllCsvButton" type="button">全店舗CSV</button>
+              <button class="primary-action csv-action" id="publishMasterButton" type="button" hidden>朝霞マスターを全店舗へ配信</button>
             </div>
           </div>
 
@@ -249,7 +250,10 @@
             <h2 id="summaryTitle" data-i18n="summaryTitle">集計</h2>
             <p data-i18n="summaryLead">入力済み数量と棚卸額、未入力商品を確認します。</p>
           </div>
-          <button class="primary-action csv-action" id="summaryCsvButton" type="button">集計CSV</button>
+          <div class="section-actions">
+            <button class="csv-action" id="summaryCsvButton" type="button">集計CSV</button>
+            <button class="primary-action csv-action" id="monthlyCloseButton" type="button" data-i18n="monthlyClose">月次締め・入力リセット</button>
+          </div>
         </div>
 
         <div class="summary-metrics">
@@ -264,6 +268,14 @@
           <div>
             <span data-i18n="missing">未入力</span>
             <strong id="missingItems">0</strong>
+          </div>
+          <div>
+            <span data-i18n="lastClosedInventory">前回締め棚卸額</span>
+            <strong id="lastClosedTotal">-</strong>
+          </div>
+          <div>
+            <span data-i18n="lastClosedDate">前回締め日時</span>
+            <strong id="lastClosedDate">-</strong>
           </div>
         </div>
 
@@ -301,7 +313,7 @@
         <h2 id="qrModalTitle" data-i18n="staffQrTitle">スタッフ入力QR</h2>
         <div class="qr-modal-body">
           <div class="qr-scan-frame">
-            <img src="./staff-qr.png?v=20260531-render-ready" alt="棚卸入力QRコード" data-i18n-alt="staffQr">
+            <img src="./staff-qr.png?v=20260601-monthly-master" alt="棚卸入力QRコード" data-i18n-alt="staffQr">
           </div>
           <button class="primary-action qr-copy-button" id="copyQrUrlButton" type="button">URLをコピー</button>
         </div>
@@ -386,6 +398,6 @@
 
     <div class="toast" id="toastMessage" role="status" aria-live="polite" hidden></div>
 
-    <script src="./app.js?v=20260531-render-ready"></script>
+    <script src="./app.js?v=20260601-monthly-master"></script>
   </body>
 </html>

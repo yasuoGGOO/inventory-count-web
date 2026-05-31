@@ -15,7 +15,7 @@ const SEED_STATE_FILE = path.join(ROOT, "inventory_state.json");
 const PFX_FILE = path.join(ROOT, "certs", "inventory-local.pfx");
 const PFX_PASSWORD = process.env.INVENTORY_HTTPS_PASSWORD || "inventory-local-dev";
 const USE_LOCAL_HTTPS = process.env.USE_LOCAL_HTTPS === "1";
-const APP_VERSION = "20260531-store-master";
+const APP_VERSION = "20260601-monthly-master";
 
 process.on("uncaughtException", (error) => {
   fs.appendFileSync(ERROR_LOG, `${new Date().toISOString()} ${error.stack || error}\n`);
@@ -84,6 +84,7 @@ function createStoreData() {
     countUpdatedAt: {},
     tabletop: {},
     tabletopUpdatedAt: {},
+    inventoryArchives: [],
     savedAt: null
   };
 }
@@ -104,6 +105,7 @@ function normalizeStoreData(value = {}) {
     countUpdatedAt: value.countUpdatedAt && typeof value.countUpdatedAt === "object" ? value.countUpdatedAt : {},
     tabletop: value.tabletop && typeof value.tabletop === "object" ? value.tabletop : {},
     tabletopUpdatedAt: value.tabletopUpdatedAt && typeof value.tabletopUpdatedAt === "object" ? value.tabletopUpdatedAt : {},
+    inventoryArchives: Array.isArray(value.inventoryArchives) ? value.inventoryArchives : [],
     savedAt: value.savedAt ?? null
   };
 }
@@ -174,6 +176,41 @@ function summarizeStore(storeData, products) {
   };
 }
 
+function buildInventoryArchive(storeData, products, user) {
+  const closedAt = new Date().toISOString();
+  const rows = products.map((product) => {
+    const rawQuantity = storeData.counts?.[product.id];
+    const quantity = rawQuantity === "" || rawQuantity === null || rawQuantity === undefined ? null : Number(rawQuantity);
+    const hasQuantity = Number.isFinite(quantity);
+    const price = Number(product.price || 0);
+    return {
+      productId: product.id,
+      name: product.name,
+      category: product.category || "",
+      unit: product.unit || "",
+      quantity: hasQuantity ? quantity : null,
+      price,
+      amount: hasQuantity ? quantity * price : 0,
+      updatedAt: storeData.countUpdatedAt?.[product.id] || ""
+    };
+  });
+  const counted = rows.filter((row) => row.quantity !== null).length;
+  const total = rows.reduce((sum, row) => sum + row.amount, 0);
+
+  return {
+    id: `archive-${Date.now()}`,
+    storeId: user.storeId,
+    storeName: user.storeName,
+    closedAt,
+    month: closedAt.slice(0, 7),
+    total,
+    counted,
+    missing: rows.length - counted,
+    productCount: rows.length,
+    rows
+  };
+}
+
 function buildClientState(serverState, user) {
   const storeData = normalizeStoreData(serverState.stores[user.storeId]);
   const progressEntries = user.isAdmin
@@ -192,6 +229,7 @@ function buildClientState(serverState, user) {
     currentStoreId: user.storeId,
     currentStoreName: user.storeName,
     isAdmin: user.isAdmin,
+    inventoryArchives: storeData.inventoryArchives,
     storeProgress: Object.fromEntries(progressEntries)
   };
 }
@@ -355,7 +393,51 @@ function mergeState(current, incoming, user) {
     store.savedAt = incoming.savedAt;
   }
 
+  if (Array.isArray(incoming.inventoryArchives)) {
+    const archiveMap = new Map(store.inventoryArchives.map((archive) => [archive.id || archive.closedAt, archive]));
+    incoming.inventoryArchives.forEach((archive) => {
+      if (!archive || typeof archive !== "object") return;
+      archiveMap.set(archive.id || archive.closedAt || `archive-${archiveMap.size}`, archive);
+    });
+    store.inventoryArchives = [...archiveMap.values()]
+      .sort((left, right) => timestamp(right.closedAt) - timestamp(left.closedAt))
+      .slice(0, 36);
+  }
+
   next.stores[user.storeId] = store;
+  return next;
+}
+
+function closeMonthlyInventory(current, user) {
+  const next = normalizeServerState(current);
+  const store = normalizeStoreData(next.stores[user.storeId]);
+  const archive = buildInventoryArchive(store, getStoreProducts(next, user.storeId), user);
+  store.inventoryArchives = [archive, ...store.inventoryArchives].slice(0, 36);
+  store.counts = {};
+  store.countUpdatedAt = {};
+  store.savedAt = archive.closedAt;
+  next.stores[user.storeId] = store;
+  return next;
+}
+
+function publishAsakaMaster(current, user) {
+  if (!user.isAdmin || user.storeId !== "asaka") {
+    return null;
+  }
+
+  const next = normalizeServerState(current);
+  const sourceProducts = getStoreProducts(next, "asaka").map((product) => ({ ...product }));
+  const updatedAt = new Date().toISOString();
+
+  storeSettings.forEach((store) => {
+    const storeData = normalizeStoreData(next.stores[store.id]);
+    storeData.products = sourceProducts.map((product) => ({ ...product }));
+    storeData.productsUpdatedAt = updatedAt;
+    next.stores[store.id] = storeData;
+  });
+
+  next.products = sourceProducts.map((product) => ({ ...product }));
+  next.productsUpdatedAt = updatedAt;
   return next;
 }
 
@@ -377,6 +459,48 @@ function readRequestBody(request) {
 async function handleApi(request, response, user) {
   const url = new URL(request.url, `https://${request.headers.host}`);
   const apiPath = url.pathname;
+
+  if (apiPath === "/api/monthly-close") {
+    if (request.method !== "POST") {
+      response.writeHead(405, { ...noIndexHeaders, "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Method not allowed" }));
+      return;
+    }
+
+    const closed = closeMonthlyInventory(readState(), user);
+    writeState(closed);
+    response.writeHead(200, {
+      ...noIndexHeaders,
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store"
+    });
+    response.end(JSON.stringify({ state: buildClientState(closed, user) }));
+    return;
+  }
+
+  if (apiPath === "/api/master/publish") {
+    if (request.method !== "POST") {
+      response.writeHead(405, { ...noIndexHeaders, "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Method not allowed" }));
+      return;
+    }
+
+    const published = publishAsakaMaster(readState(), user);
+    if (!published) {
+      response.writeHead(403, { ...noIndexHeaders, "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Forbidden" }));
+      return;
+    }
+
+    writeState(published);
+    response.writeHead(200, {
+      ...noIndexHeaders,
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store"
+    });
+    response.end(JSON.stringify({ state: buildClientState(published, user) }));
+    return;
+  }
 
   if (apiPath === "/api/export.csv") {
     if (request.method !== "GET") {

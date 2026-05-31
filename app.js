@@ -3,7 +3,7 @@ const LANGUAGE_KEY = "inventory-language-v1";
 const CLIENT_ID_KEY = "inventory-client-id-v1";
 const PENDING_SYNC_KEY = "inventory-pending-sync-v2-store-separated";
 const SYNC_INTERVAL_MS = 15000;
-const APP_VERSION = "20260531-store-master";
+const APP_VERSION = "20260601-monthly-master";
 const languageNames = { ja: "日本語", my: "မြန်မာ", vi: "Tiếng Việt" };
 const speechLanguages = { ja: "ja-JP", my: "my-MM", vi: "vi-VN" };
 const stores = [
@@ -95,6 +95,14 @@ const messages = {
     quantityByProduct: "商品ごとの数量",
     register: "登録",
     registeredOk: "登録されました",
+    monthlyClose: "月次締め・入力リセット",
+    monthlyCloseConfirm: "現在の棚卸額合計を履歴に保存し、入力数量をリセットします。先にCSV出力が必要な場合はキャンセルしてください。",
+    monthlyCloseDone: "月次締めを保存し、入力数量をリセットしました",
+    lastClosedInventory: "前回締め棚卸額",
+    lastClosedDate: "前回締め日時",
+    publishMaster: "朝霞マスターを全店舗へ配信",
+    publishMasterConfirm: "朝霞東口店の商品マスターを熊谷南口店・浦和道場店へ配信します。各店舗の商品マスターは朝霞の内容で上書きされます。",
+    publishMasterDone: "朝霞の商品マスターを全店舗へ配信しました",
     saveAll: "確定して保存",
     savedAt: "保存済み {date}",
     saveSelected: "この商品を確定",
@@ -195,6 +203,14 @@ const messages = {
     quantityByProduct: "ပစ္စည်းအလိုက် အရေအတွက်",
     register: "မှတ်ပုံတင်",
     registeredOk: "မှတ်ပုံတင်ပြီးပါပြီ",
+    monthlyClose: "လစဉ် ပိတ်ပြီး အရေအတွက် ပြန်လည်စမည်",
+    monthlyCloseConfirm: "လက်ရှိစာရင်းတန်ဖိုးကို မှတ်တမ်းသိမ်းပြီး အရေအတွက်များကို ဖျက်မည်။ CSV လိုအပ်ပါက Cancel ကိုနှိပ်ပါ။",
+    monthlyCloseDone: "လစဉ်မှတ်တမ်းသိမ်းပြီး အရေအတွက်များကို ပြန်စထားသည်",
+    lastClosedInventory: "နောက်ဆုံးပိတ် စာရင်းတန်ဖိုး",
+    lastClosedDate: "နောက်ဆုံးပိတ်ချိန်",
+    publishMaster: "Asaka မာစတာကို ဆိုင်အားလုံးသို့ပို့",
+    publishMasterConfirm: "Asaka Higashiguchi ဆိုင်၏ ပစ္စည်းမာစတာဖြင့် Kumagaya နှင့် Urawa ကို အစားထိုးမည်။",
+    publishMasterDone: "Asaka ပစ္စည်းမာစတာကို ဆိုင်အားလုံးသို့ ပို့ပြီးပါပြီ",
     saveAll: "အတည်ပြုပြီး သိမ်းမည်",
     savedAt: "သိမ်းပြီး {date}",
     saveSelected: "ဤပစ္စည်းကို အတည်ပြု",
@@ -295,6 +311,14 @@ const messages = {
     quantityByProduct: "Số lượng theo sản phẩm",
     register: "Đăng ký",
     registeredOk: "Đã đăng ký",
+    monthlyClose: "Chốt tháng và xóa số nhập",
+    monthlyCloseConfirm: "Lưu tổng giá trị kiểm kê hiện tại vào lịch sử và xóa số lượng đã nhập. Nếu cần xuất CSV trước, hãy hủy.",
+    monthlyCloseDone: "Đã chốt tháng và xóa số lượng đã nhập",
+    lastClosedInventory: "Giá trị chốt gần nhất",
+    lastClosedDate: "Thời gian chốt gần nhất",
+    publishMaster: "Phát danh mục Asaka cho toàn bộ cửa hàng",
+    publishMasterConfirm: "Danh mục sản phẩm của Asaka Higashiguchi sẽ ghi đè sang Kumagaya và Urawa.",
+    publishMasterDone: "Đã phát danh mục Asaka cho toàn bộ cửa hàng",
     saveAll: "Xác nhận và lưu",
     savedAt: "Đã lưu {date}",
     saveSelected: "Xác nhận sản phẩm này",
@@ -565,10 +589,14 @@ const elements = {
   storeRoleList: document.querySelector("#storeRoleList"),
   exportStoreCsvButton: document.querySelector("#exportStoreCsvButton"),
   exportAllCsvButton: document.querySelector("#exportAllCsvButton"),
+  publishMasterButton: document.querySelector("#publishMasterButton"),
   masterTableBody: document.querySelector("#masterTableBody"),
   totalAmount: document.querySelector("#totalAmount"),
   countedItems: document.querySelector("#countedItems"),
   missingItems: document.querySelector("#missingItems"),
+  lastClosedTotal: document.querySelector("#lastClosedTotal"),
+  lastClosedDate: document.querySelector("#lastClosedDate"),
+  monthlyCloseButton: document.querySelector("#monthlyCloseButton"),
   toastMessage: document.querySelector("#toastMessage"),
   tabletopTotalCost: document.querySelector("#tabletopTotalCost"),
   tabletopCsvButton: document.querySelector("#tabletopCsvButton"),
@@ -662,6 +690,7 @@ function normalizeState(value = {}) {
     lastConfirmedProductId: value.lastConfirmedProductId ?? null,
     productsUpdatedAt: value.productsUpdatedAt ?? null,
     savedAt: value.savedAt ?? null,
+    inventoryArchives: Array.isArray(value.inventoryArchives) ? value.inventoryArchives : [],
     currentStoreId: value.currentStoreId ?? "asaka",
     currentStoreName: value.currentStoreName ?? "朝霞東口店",
     isAdmin: value.isAdmin ?? true,
@@ -800,6 +829,7 @@ function mergeRemoteState(remoteValue) {
     state.countUpdatedAt = { ...remote.countUpdatedAt };
     state.tabletop = JSON.parse(JSON.stringify(remote.tabletop || {}));
     state.tabletopUpdatedAt = { ...remote.tabletopUpdatedAt };
+    state.inventoryArchives = [...remote.inventoryArchives];
     state.routeTransitions = {};
     state.lastConfirmedProductId = null;
     state.savedAt = remote.savedAt;
@@ -850,6 +880,10 @@ function mergeRemoteState(remoteValue) {
     state.savedAt = remote.savedAt;
   }
 
+  if (getLatestArchiveTime(remote.inventoryArchives) > getLatestArchiveTime(state.inventoryArchives)) {
+    state.inventoryArchives = [...remote.inventoryArchives];
+  }
+
   state.currentStoreId = remote.currentStoreId;
   state.currentStoreName = remote.currentStoreName;
   state.isAdmin = remote.isAdmin;
@@ -857,6 +891,34 @@ function mergeRemoteState(remoteValue) {
 
   saveLocalState();
   renderAll();
+}
+
+function replaceLocalState(remoteValue) {
+  const remote = normalizeState(remoteValue);
+  state.products = remote.products;
+  state.productsUpdatedAt = remote.productsUpdatedAt;
+  state.counts = { ...remote.counts };
+  state.countUpdatedAt = { ...remote.countUpdatedAt };
+  state.tabletop = JSON.parse(JSON.stringify(remote.tabletop || {}));
+  state.tabletopUpdatedAt = { ...remote.tabletopUpdatedAt };
+  state.inventoryArchives = [...remote.inventoryArchives];
+  state.savedAt = remote.savedAt;
+  state.currentStoreId = remote.currentStoreId;
+  state.currentStoreName = remote.currentStoreName;
+  state.isAdmin = remote.isAdmin;
+  state.storeProgress = remote.storeProgress;
+  state.routeTransitions = {};
+  state.lastConfirmedProductId = null;
+  selectedProductId = state.products[0]?.id ?? null;
+  saveLocalState();
+  renderAll();
+}
+
+function getLatestArchiveTime(archives = []) {
+  return archives
+    .map((archive) => getTimestamp(archive.closedAt))
+    .filter(Boolean)
+    .sort((a, b) => b - a)[0] || 0;
 }
 
 async function syncWithServer(options = {}) {
@@ -1854,15 +1916,27 @@ function updateTabletopEntry(itemId, field, value) {
   renderTabletop();
 }
 
+function getLatestInventoryArchive() {
+  return [...(state.inventoryArchives || [])]
+    .sort((left, right) => getTimestamp(right.closedAt) - getTimestamp(left.closedAt))[0] || null;
+}
+
 function renderSummary() {
   const rows = getInventoryRows();
   const total = rows.reduce((sum, row) => sum + row.amount, 0);
   const counted = rows.filter((row) => row.quantity !== null).length;
   const missing = rows.filter((row) => row.quantity === null);
+  const latestArchive = getLatestInventoryArchive();
 
   elements.totalAmount.textContent = currency.format(total);
   elements.countedItems.textContent = `${counted} / ${state.products.length}`;
   elements.missingItems.textContent = String(missing.length);
+  if (elements.lastClosedTotal) {
+    elements.lastClosedTotal.textContent = latestArchive ? currency.format(latestArchive.total || 0) : "-";
+  }
+  if (elements.lastClosedDate) {
+    elements.lastClosedDate.textContent = latestArchive?.closedAt ? new Date(latestArchive.closedAt).toLocaleString("ja-JP") : "-";
+  }
 
   elements.summaryTableBody.innerHTML = rows
     .map(
@@ -1890,6 +1964,23 @@ function renderSummary() {
         )
         .join("")
     : `<div class="empty-state">${escapeHtml(t("emptyMissing"))}</div>`;
+}
+
+async function closeMonthlyInventory() {
+  const ok = confirm(t("monthlyCloseConfirm"));
+  if (!ok) return;
+
+  try {
+    const response = await fetch("./api/monthly-close", { method: "POST" });
+    if (!response.ok) throw new Error(`Monthly close failed: ${response.status}`);
+    const payload = await response.json();
+    if (payload.state) replaceLocalState(payload.state);
+    clearPendingSync();
+    isDirty = false;
+    showToast(t("monthlyCloseDone"));
+  } catch {
+    showToast(t("syncFailed"));
+  }
 }
 
 function setQuantity(productId, quantity) {
@@ -2128,6 +2219,23 @@ function addMasterProduct(product) {
   showToast(t("registeredOk"));
 }
 
+async function publishMasterToStores() {
+  const ok = confirm(t("publishMasterConfirm"));
+  if (!ok) return;
+
+  try {
+    const response = await fetch("./api/master/publish", { method: "POST" });
+    if (!response.ok) throw new Error(`Publish failed: ${response.status}`);
+    const payload = await response.json();
+    if (payload.state) mergeRemoteState(payload.state);
+    clearPendingSync();
+    isDirty = false;
+    showToast(t("publishMasterDone"));
+  } catch {
+    showToast(t("syncFailed"));
+  }
+}
+
 function handleProductSubmit(event) {
   event.preventDefault();
   const id = elements.editingProductId.value || createLocalId("product");
@@ -2193,6 +2301,9 @@ function switchScreen(screen) {
 function applyStorePermissions() {
   if (elements.exportAllCsvButton) {
     elements.exportAllCsvButton.hidden = !state.isAdmin;
+  }
+  if (elements.publishMasterButton) {
+    elements.publishMasterButton.hidden = !state.isAdmin || state.currentStoreId !== "asaka";
   }
 }
 
@@ -2385,8 +2496,10 @@ elements.closeCalculatorBackdrop.addEventListener("click", closeCalculator);
 elements.calculatorGrid.addEventListener("click", handleCalculatorInput);
 elements.exportStoreCsvButton?.addEventListener("click", () => downloadCsv("store", "summary"));
 elements.exportAllCsvButton?.addEventListener("click", () => downloadCsv("all", "summary"));
+elements.publishMasterButton?.addEventListener("click", publishMasterToStores);
 elements.tabletopCsvButton?.addEventListener("click", () => downloadCsv("store", "tabletop"));
 elements.summaryCsvButton?.addEventListener("click", () => downloadCsv("store", "summary"));
+elements.monthlyCloseButton?.addEventListener("click", closeMonthlyInventory);
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && !elements.qrModal.hidden) {
     closeQrModal();
