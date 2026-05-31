@@ -12,10 +12,11 @@ fs.mkdirSync(DATA_DIR, { recursive: true });
 const ERROR_LOG = path.join(DATA_DIR, "server.err.log");
 const STATE_FILE = path.join(DATA_DIR, "inventory_state.json");
 const SEED_STATE_FILE = path.join(ROOT, "inventory_state.json");
+const DAILY_BACKUP_DIR = path.join(DATA_DIR, "daily_backups");
 const PFX_FILE = path.join(ROOT, "certs", "inventory-local.pfx");
 const PFX_PASSWORD = process.env.INVENTORY_HTTPS_PASSWORD || "inventory-local-dev";
 const USE_LOCAL_HTTPS = process.env.USE_LOCAL_HTTPS === "1";
-const APP_VERSION = "20260601-monthly-master";
+const APP_VERSION = "20260601-monthly-split";
 
 process.on("uncaughtException", (error) => {
   fs.appendFileSync(ERROR_LOG, `${new Date().toISOString()} ${error.stack || error}\n`);
@@ -143,6 +144,57 @@ function writeState(state) {
   fs.writeFileSync(STATE_FILE, `${JSON.stringify(state, null, 2)}\n`);
 }
 
+function getJstDateStamp(date = new Date()) {
+  const jstOffsetMs = 9 * 60 * 60 * 1000;
+  return new Date(date.getTime() + jstOffsetMs).toISOString().slice(0, 10);
+}
+
+function getDelayUntilNextJstFive(now = new Date()) {
+  const jstOffsetMs = 9 * 60 * 60 * 1000;
+  const jstNowMs = now.getTime() + jstOffsetMs;
+  const jstNow = new Date(jstNowMs);
+  let targetJstMs = Date.UTC(
+    jstNow.getUTCFullYear(),
+    jstNow.getUTCMonth(),
+    jstNow.getUTCDate(),
+    5,
+    0,
+    0,
+    0
+  );
+  if (targetJstMs <= jstNowMs) {
+    targetJstMs += 24 * 60 * 60 * 1000;
+  }
+  return targetJstMs - jstNowMs;
+}
+
+function backupStateForToday() {
+  fs.mkdirSync(DAILY_BACKUP_DIR, { recursive: true });
+  const backupDate = getJstDateStamp();
+  const backupPath = path.join(DAILY_BACKUP_DIR, `inventory_state_${backupDate}.json`);
+  if (fs.existsSync(backupPath)) {
+    return backupPath;
+  }
+  const state = readState();
+  fs.writeFileSync(backupPath, `${JSON.stringify(state, null, 2)}\n`, { flag: "wx" });
+  return backupPath;
+}
+
+function scheduleDailyStateBackup() {
+  const delay = getDelayUntilNextJstFive();
+  const timer = setTimeout(() => {
+    try {
+      const backupPath = backupStateForToday();
+      console.log(`Daily inventory backup saved: ${backupPath}`);
+    } catch (error) {
+      fs.appendFileSync(ERROR_LOG, `${new Date().toISOString()} daily backup failed: ${error.stack || error}\n`);
+    } finally {
+      scheduleDailyStateBackup();
+    }
+  }, delay);
+  timer.unref?.();
+}
+
 function timestamp(value) {
   const time = Date.parse(value || "");
   return Number.isFinite(time) ? time : 0;
@@ -188,12 +240,20 @@ function summarizeStore(storeData, products) {
   });
   const counted = rows.filter((row) => row.quantity !== null).length;
   const total = rows.reduce((sum, row) => sum + row.amount, 0);
+  const alcoholTotal = products.reduce((sum, product) => {
+    const quantity = Number(storeData.counts?.[product.id]);
+    return product.category === "酒類" && Number.isFinite(quantity)
+      ? sum + quantity * Number(product.price || 0)
+      : sum;
+  }, 0);
   const updatedValues = [storeData.savedAt, ...Object.values(storeData.countUpdatedAt || {})].filter(Boolean);
   const latest = updatedValues.map(timestamp).filter(Boolean).sort((a, b) => b - a)[0];
 
   return {
     rate: products.length ? Math.round((counted / products.length) * 100) : 0,
     total,
+    foodTotal: total - alcoholTotal,
+    alcoholTotal,
     missing: products.length - counted,
     updatedAt: latest ? new Date(latest).toISOString() : null
   };
@@ -219,6 +279,9 @@ function buildInventoryArchive(storeData, products, user) {
   });
   const counted = rows.filter((row) => row.quantity !== null).length;
   const total = rows.reduce((sum, row) => sum + row.amount, 0);
+  const alcoholTotal = rows
+    .filter((row) => row.category === "酒類")
+    .reduce((sum, row) => sum + row.amount, 0);
 
   return {
     id: `archive-${Date.now()}`,
@@ -227,6 +290,8 @@ function buildInventoryArchive(storeData, products, user) {
     closedAt,
     month: closedAt.slice(0, 7),
     total,
+    foodTotal: total - alcoholTotal,
+    alcoholTotal,
     counted,
     missing: rows.length - counted,
     productCount: rows.length,
@@ -390,7 +455,7 @@ function buildMonthlyArchiveCsv(serverState, user, scope) {
   const targetStores = scope === "all" && user.isAdmin
     ? storeSettings
     : storeSettings.filter((store) => store.id === user.storeId);
-  const headers = ["店舗ID", "店舗名", "対象月", "締め日時", "棚卸額", "入力済み件数", "未入力件数", "商品数"];
+  const headers = ["店舗ID", "店舗名", "対象月", "締め日時", "棚卸額", "食品棚卸額", "酒類棚卸額", "入力済み件数", "未入力件数", "商品数"];
   const rows = [headers];
 
   targetStores.forEach((store) => {
@@ -406,6 +471,8 @@ function buildMonthlyArchiveCsv(serverState, user, scope) {
           archive.month || "",
           archive.closedAt || "",
           archive.total || 0,
+          archive.foodTotal || 0,
+          archive.alcoholTotal || 0,
           archive.counted || 0,
           archive.missing || 0,
           archive.productCount || 0
@@ -516,6 +583,42 @@ function deleteMonthlyArchive(current, user, archiveId) {
   return next;
 }
 
+function saveMonthlyArchive(current, user, payload) {
+  const next = normalizeServerState(current);
+  const store = normalizeStoreData(next.stores[user.storeId]);
+  const foodTotal = parseAmount(payload.foodTotal);
+  const alcoholTotal = parseAmount(payload.alcoholTotal);
+  const total = foodTotal + alcoholTotal;
+  const now = new Date().toISOString();
+  const id = String(payload.id || `manual-${Date.now()}`);
+  const existing = store.inventoryArchives.find((item) => item.id === id);
+  const archive = {
+    ...(existing || {}),
+    id,
+    storeId: user.storeId,
+    storeName: user.storeName,
+    closedAt: payload.closedAt || existing?.closedAt || now,
+    month: String(payload.month || existing?.month || now.slice(0, 7)),
+    total,
+    foodTotal,
+    alcoholTotal,
+    counted: payload.counted === undefined ? Number(existing?.counted || 0) : Number(payload.counted || 0),
+    missing: payload.missing === undefined ? Number(existing?.missing || 0) : Number(payload.missing || 0),
+    productCount: payload.productCount === undefined ? Number(existing?.productCount || 0) : Number(payload.productCount || 0),
+    manual: true,
+    rows: Array.isArray(payload.rows) ? payload.rows : existing?.rows || []
+  };
+
+  store.inventoryArchives = [
+    archive,
+    ...store.inventoryArchives.filter((item) => item.id !== id)
+  ]
+    .sort((left, right) => timestamp(right.closedAt) - timestamp(left.closedAt))
+    .slice(0, 36);
+  next.stores[user.storeId] = store;
+  return next;
+}
+
 function readRequestBody(request) {
   return new Promise((resolve, reject) => {
     let body = "";
@@ -594,6 +697,26 @@ async function handleApi(request, response, user) {
       "Cache-Control": "no-store"
     });
     response.end(JSON.stringify({ state: buildClientState(deleted, user) }));
+    return;
+  }
+
+  if (apiPath === "/api/monthly-archive/save") {
+    if (request.method !== "POST") {
+      response.writeHead(405, { ...noIndexHeaders, "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Method not allowed" }));
+      return;
+    }
+
+    const body = await readRequestBody(request);
+    const payload = JSON.parse(body || "{}");
+    const saved = saveMonthlyArchive(readState(), user, payload);
+    writeState(saved);
+    response.writeHead(200, {
+      ...noIndexHeaders,
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store"
+    });
+    response.end(JSON.stringify({ state: buildClientState(saved, user) }));
     return;
   }
 
@@ -830,6 +953,7 @@ if (!USE_LOCAL_HTTPS) {
     console.log(`Inventory app: http://${HOST}:${PORT}/`);
     console.log("Users: asaka / kumagaya / urawa");
     console.log("Password: 1122");
+    scheduleDailyStateBackup();
   });
   server.on("error", (error) => {
     fs.appendFileSync(ERROR_LOG, `${new Date().toISOString()} ${error.stack || error}\n`);
@@ -854,6 +978,7 @@ if (!USE_LOCAL_HTTPS) {
     console.log(`HTTP requests on ${PORT} redirect to HTTPS`);
     console.log("Users: asaka / kumagaya / urawa");
     console.log("Password: 1122");
+    scheduleDailyStateBackup();
   });
 
   mixedServer.on("error", (error) => {

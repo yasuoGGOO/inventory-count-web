@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex,nofollow,noarchive">
     <title>棚卸カウント表</title>
-    <link rel="stylesheet" href="./app.css?v=20260601-monthly-master">
+    <link rel="stylesheet" href="./app.css?v=20260601-monthly-split">
   </head>
   <body>
     <header class="app-header">
@@ -24,7 +24,7 @@
           <button type="button" data-lang="vi">Tiếng Việt</button>
         </div>
         <button class="qr-card header-qr" id="openQrButton" type="button" aria-label="棚卸入力QRコード" data-i18n-aria-label="staffQr">
-          <img src="./staff-qr.png?v=20260601-monthly-master" alt="棚卸入力QRコード" data-i18n-alt="staffQr">
+          <img src="./staff-qr.png?v=20260601-monthly-split" alt="棚卸入力QRコード" data-i18n-alt="staffQr">
           <div>
             <strong data-i18n="staffQrHelper">入力補助者はQRコードからログイン</strong>
             <span>公開URL / staff</span>
@@ -263,6 +263,14 @@
             <strong id="totalAmount">0円</strong>
           </div>
           <div>
+            <span data-i18n="foodInventoryAmount">食品棚卸額</span>
+            <strong id="foodAmount">0円</strong>
+          </div>
+          <div>
+            <span data-i18n="alcoholInventoryAmount">酒類棚卸額</span>
+            <strong id="alcoholAmount">0円</strong>
+          </div>
+          <div>
             <span data-i18n="counted">入力済み</span>
             <strong id="countedItems">0 / 0</strong>
           </div>
@@ -315,6 +323,26 @@
           <button class="primary-action csv-action" id="monthlyHistoryCsvButton" type="button" data-i18n="monthlyHistoryCsv">月次記録CSV</button>
         </div>
 
+        <form id="monthlyArchiveForm" class="master-form monthly-form" novalidate>
+          <input type="hidden" id="monthlyArchiveId">
+          <label>
+            <span data-i18n="monthlyMonth">対象月</span>
+            <input id="monthlyArchiveMonth" type="month" required>
+          </label>
+          <label>
+            <span data-i18n="foodInventoryAmount">食品棚卸額</span>
+            <input id="monthlyFoodTotal" type="number" min="0" step="1" inputmode="numeric">
+          </label>
+          <label>
+            <span data-i18n="alcoholInventoryAmount">酒類棚卸額</span>
+            <input id="monthlyAlcoholTotal" type="number" min="0" step="1" inputmode="numeric">
+          </label>
+          <div class="form-actions">
+            <button class="primary-action" type="submit" data-i18n="monthlyManualSave">月次記録を保存</button>
+            <button id="cancelMonthlyEditButton" type="button" data-i18n="monthlyManualCancel">入力をクリア</button>
+          </div>
+        </form>
+
         <div class="table-wrap">
           <table>
             <thead>
@@ -322,6 +350,8 @@
                 <th>対象月</th>
                 <th>締め日時</th>
                 <th>棚卸額</th>
+                <th data-i18n="foodInventoryAmount">食品棚卸額</th>
+                <th data-i18n="alcoholInventoryAmount">酒類棚卸額</th>
                 <th>入力済み</th>
                 <th>未入力</th>
                 <th>商品数</th>
@@ -341,7 +371,7 @@
         <h2 id="qrModalTitle" data-i18n="staffQrTitle">スタッフ入力QR</h2>
         <div class="qr-modal-body">
           <div class="qr-scan-frame">
-            <img src="./staff-qr.png?v=20260601-monthly-master" alt="棚卸入力QRコード" data-i18n-alt="staffQr">
+            <img src="./staff-qr.png?v=20260601-monthly-split" alt="棚卸入力QRコード" data-i18n-alt="staffQr">
           </div>
           <button class="primary-action qr-copy-button" id="copyQrUrlButton" type="button">URLをコピー</button>
         </div>
@@ -426,6 +456,6 @@
 
     <div class="toast" id="toastMessage" role="status" aria-live="polite" hidden></div>
 
-    <script src="./app.js?v=20260601-monthly-master"></script>
+    <script src="./app.js?v=20260601-monthly-split"></script>
   </body>
 </html>

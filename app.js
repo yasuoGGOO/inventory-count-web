@@ -3,7 +3,7 @@ const LANGUAGE_KEY = "inventory-language-v1";
 const CLIENT_ID_KEY = "inventory-client-id-v1";
 const PENDING_SYNC_KEY = "inventory-pending-sync-v2-store-separated";
 const SYNC_INTERVAL_MS = 15000;
-const APP_VERSION = "20260601-monthly-master";
+const APP_VERSION = "20260601-monthly-split";
 const languageNames = { ja: "日本語", my: "မြန်မာ", vi: "Tiếng Việt" };
 const speechLanguages = { ja: "ja-JP", my: "my-MM", vi: "vi-VN" };
 const stores = [
@@ -124,6 +124,13 @@ const messages = {
     monthlyHistoryLead: "月次締めで保存した棚卸額を12か月分確認します。",
     monthlyHistoryCsv: "月次記録CSV",
     monthlyNoHistory: "月次記録はまだありません",
+    monthlyManualSave: "月次記録を保存",
+    monthlyManualEdit: "修正",
+    monthlyManualCancel: "入力をクリア",
+    monthlySaved: "月次記録を保存しました",
+    monthlyMonth: "対象月",
+    foodInventoryAmount: "食品棚卸額",
+    alcoholInventoryAmount: "酒類棚卸額",
     monthlyDelete: "削除",
     monthlyDeleteConfirm: "この月次記録を削除しますか？",
     monthlyDeleted: "月次記録を削除しました",
@@ -241,6 +248,13 @@ const messages = {
     monthlyHistoryLead: "လစဉ်ပိတ်ထားသော စာရင်းတန်ဖိုးကို 12 လစာ ကြည့်ပါ။",
     monthlyHistoryCsv: "လစဉ် CSV",
     monthlyNoHistory: "လစဉ်မှတ်တမ်း မရှိသေးပါ",
+    monthlyManualSave: "လစဉ်မှတ်တမ်း သိမ်းမည်",
+    monthlyManualEdit: "ပြင်မည်",
+    monthlyManualCancel: "ထည့်ထားသည်ကို ရှင်းမည်",
+    monthlySaved: "လစဉ်မှတ်တမ်း သိမ်းပြီးပါပြီ",
+    monthlyMonth: "လ",
+    foodInventoryAmount: "အစားအစာ စာရင်းတန်ဖိုး",
+    alcoholInventoryAmount: "အရက် စာရင်းတန်ဖိုး",
     monthlyDelete: "ဖျက်မည်",
     monthlyDeleteConfirm: "ဤလစဉ်မှတ်တမ်းကို ဖျက်မလား။",
     monthlyDeleted: "လစဉ်မှတ်တမ်း ဖျက်ပြီးပါပြီ",
@@ -358,6 +372,13 @@ const messages = {
     monthlyHistoryLead: "Xem giá trị kiểm kê đã chốt trong 12 tháng.",
     monthlyHistoryCsv: "CSV ghi chép tháng",
     monthlyNoHistory: "Chưa có ghi chép tháng",
+    monthlyManualSave: "Lưu ghi chép tháng",
+    monthlyManualEdit: "Sửa",
+    monthlyManualCancel: "Xóa nhập",
+    monthlySaved: "Đã lưu ghi chép tháng",
+    monthlyMonth: "Tháng",
+    foodInventoryAmount: "Giá trị tồn thực phẩm",
+    alcoholInventoryAmount: "Giá trị tồn đồ uống có cồn",
     monthlyDelete: "Xóa",
     monthlyDeleteConfirm: "Xóa ghi chép tháng này?",
     monthlyDeleted: "Đã xóa ghi chép tháng",
@@ -619,6 +640,8 @@ const elements = {
   publishMasterButton: document.querySelector("#publishMasterButton"),
   masterTableBody: document.querySelector("#masterTableBody"),
   totalAmount: document.querySelector("#totalAmount"),
+  foodAmount: document.querySelector("#foodAmount"),
+  alcoholAmount: document.querySelector("#alcoholAmount"),
   countedItems: document.querySelector("#countedItems"),
   missingItems: document.querySelector("#missingItems"),
   lastClosedTotal: document.querySelector("#lastClosedTotal"),
@@ -626,6 +649,12 @@ const elements = {
   monthlyCloseButton: document.querySelector("#monthlyCloseButton"),
   monthlyHistoryBody: document.querySelector("#monthlyHistoryBody"),
   monthlyHistoryCsvButton: document.querySelector("#monthlyHistoryCsvButton"),
+  monthlyArchiveForm: document.querySelector("#monthlyArchiveForm"),
+  monthlyArchiveId: document.querySelector("#monthlyArchiveId"),
+  monthlyArchiveMonth: document.querySelector("#monthlyArchiveMonth"),
+  monthlyFoodTotal: document.querySelector("#monthlyFoodTotal"),
+  monthlyAlcoholTotal: document.querySelector("#monthlyAlcoholTotal"),
+  cancelMonthlyEditButton: document.querySelector("#cancelMonthlyEditButton"),
   toastMessage: document.querySelector("#toastMessage"),
   tabletopTotalCost: document.querySelector("#tabletopTotalCost"),
   tabletopCsvButton: document.querySelector("#tabletopCsvButton"),
@@ -1618,11 +1647,23 @@ function getInventoryRows() {
   });
 }
 
+function getInventoryTotals(rows = getInventoryRows()) {
+  const alcoholTotal = rows
+    .filter(({ product }) => product.category === "酒類")
+    .reduce((sum, row) => sum + row.amount, 0);
+  const total = rows.reduce((sum, row) => sum + row.amount, 0);
+  return {
+    total,
+    foodTotal: total - alcoholTotal,
+    alcoholTotal
+  };
+}
+
 function getCurrentStoreProgress() {
   const rows = getInventoryRows();
+  const totals = getInventoryTotals(rows);
   const counted = rows.filter((row) => row.quantity !== null).length;
   const missing = rows.length - counted;
-  const total = rows.reduce((sum, row) => sum + row.amount, 0);
   const updatedValues = [
     state.savedAt,
     state.productsUpdatedAt,
@@ -1635,7 +1676,9 @@ function getCurrentStoreProgress() {
 
   return {
     rate: rows.length ? Math.round((counted / rows.length) * 100) : 0,
-    total,
+    total: totals.total,
+    foodTotal: totals.foodTotal,
+    alcoholTotal: totals.alcoholTotal,
     missing,
     updatedAt: latest ? new Date(latest).toISOString() : null
   };
@@ -1975,7 +2018,7 @@ function renderMonthlyHistory() {
   if (!archives.length) {
     elements.monthlyHistoryBody.innerHTML = `
       <tr>
-        <td colspan="7" class="empty-table-cell">${escapeHtml(t("monthlyNoHistory"))}</td>
+        <td colspan="9" class="empty-table-cell">${escapeHtml(t("monthlyNoHistory"))}</td>
       </tr>
     `;
     return;
@@ -1987,10 +2030,13 @@ function renderMonthlyHistory() {
         <td>${escapeHtml(archive.month || "-")}</td>
         <td>${archive.closedAt ? new Date(archive.closedAt).toLocaleString("ja-JP") : "-"}</td>
         <td>${currency.format(archive.total || 0)}</td>
+        <td>${currency.format(archive.foodTotal || 0)}</td>
+        <td>${currency.format(archive.alcoholTotal || 0)}</td>
         <td>${formatter.format(archive.counted || 0)}</td>
         <td>${formatter.format(archive.missing || 0)}</td>
         <td>${formatter.format(archive.productCount || 0)}</td>
         <td>
+          <button type="button" data-edit-archive-id="${escapeHtml(archive.id)}">${escapeHtml(t("monthlyManualEdit"))}</button>
           <button type="button" data-delete-archive-id="${escapeHtml(archive.id)}">${escapeHtml(t("monthlyDelete"))}</button>
         </td>
       </tr>
@@ -2000,12 +2046,14 @@ function renderMonthlyHistory() {
 
 function renderSummary() {
   const rows = getInventoryRows();
-  const total = rows.reduce((sum, row) => sum + row.amount, 0);
+  const totals = getInventoryTotals(rows);
   const counted = rows.filter((row) => row.quantity !== null).length;
   const missing = rows.filter((row) => row.quantity === null);
   const latestArchive = getLatestInventoryArchive();
 
-  elements.totalAmount.textContent = currency.format(total);
+  elements.totalAmount.textContent = currency.format(totals.total);
+  if (elements.foodAmount) elements.foodAmount.textContent = currency.format(totals.foodTotal);
+  if (elements.alcoholAmount) elements.alcoholAmount.textContent = currency.format(totals.alcoholTotal);
   elements.countedItems.textContent = `${counted} / ${state.products.length}`;
   elements.missingItems.textContent = String(missing.length);
   if (elements.lastClosedTotal) {
@@ -2079,6 +2127,55 @@ async function deleteMonthlyArchive(archiveId) {
     clearPendingSync();
     isDirty = false;
     showToast(t("monthlyDeleted"));
+  } catch {
+    showToast(t("syncFailed"));
+  }
+}
+
+function resetMonthlyArchiveForm() {
+  if (!elements.monthlyArchiveForm) return;
+  elements.monthlyArchiveForm.reset();
+  elements.monthlyArchiveId.value = "";
+}
+
+function editMonthlyArchive(archiveId) {
+  const archive = (state.inventoryArchives || []).find((item) => item.id === archiveId);
+  if (!archive || !elements.monthlyArchiveForm) return;
+  elements.monthlyArchiveId.value = archive.id;
+  elements.monthlyArchiveMonth.value = archive.month || "";
+  elements.monthlyFoodTotal.value = archive.foodTotal || "";
+  elements.monthlyAlcoholTotal.value = archive.alcoholTotal || "";
+  elements.monthlyFoodTotal.focus();
+}
+
+async function saveMonthlyArchive(event) {
+  event.preventDefault();
+  const month = elements.monthlyArchiveMonth.value;
+  const foodTotal = elements.monthlyFoodTotal.value;
+  const alcoholTotal = elements.monthlyAlcoholTotal.value;
+  if (!month) {
+    showToast("対象月を入力してください");
+    return;
+  }
+
+  try {
+    const response = await fetch("./api/monthly-archive/save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: elements.monthlyArchiveId.value,
+        month,
+        foodTotal,
+        alcoholTotal
+      })
+    });
+    if (!response.ok) throw new Error(`Save archive failed: ${response.status}`);
+    const payload = await response.json();
+    if (payload.state) replaceLocalState(payload.state);
+    clearPendingSync();
+    isDirty = false;
+    resetMonthlyArchiveForm();
+    showToast(t("monthlySaved"));
   } catch {
     showToast(t("syncFailed"));
   }
@@ -2602,6 +2699,8 @@ elements.tabletopCsvButton?.addEventListener("click", () => downloadCsv("store",
 elements.summaryCsvButton?.addEventListener("click", () => downloadCsv("store", "summary"));
 elements.monthlyCloseButton?.addEventListener("click", closeMonthlyInventory);
 elements.monthlyHistoryCsvButton?.addEventListener("click", () => downloadCsv("store", "monthly"));
+elements.monthlyArchiveForm?.addEventListener("submit", saveMonthlyArchive);
+elements.cancelMonthlyEditButton?.addEventListener("click", resetMonthlyArchiveForm);
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && !elements.qrModal.hidden) {
     closeQrModal();
@@ -2668,6 +2767,11 @@ elements.fryOilTableBody.addEventListener("change", (event) => {
 });
 
 elements.monthlyHistoryBody?.addEventListener("click", (event) => {
+  const editButton = event.target.closest("[data-edit-archive-id]");
+  if (editButton) {
+    editMonthlyArchive(editButton.dataset.editArchiveId);
+    return;
+  }
   const button = event.target.closest("[data-delete-archive-id]");
   if (!button) return;
   deleteMonthlyArchive(button.dataset.deleteArchiveId);
